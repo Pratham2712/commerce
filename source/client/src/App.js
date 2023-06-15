@@ -1,18 +1,14 @@
 import "./App.css";
-import { USER_Root, User_Home } from "./constants/links";
-
-import { Route, BrowserRouter, Routes } from "react-router-dom";
-import Home from "./pages/Home";
-import UserLayouts from "./layouts/UserLayouts";
+import {BrowserRouter } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import Routess from "./Routess";
 
 function App() {
   return (
     <>
       <BrowserRouter>
-        <Routes>
-          <Route path={USER_Root} element={<UserLayouts />}></Route>
-          <Route path={User_Home} element={<Home />}></Route>
-        </Routes>
+      <Navbar/>
+      <Routess/>
       </BrowserRouter>
     </>
   );
