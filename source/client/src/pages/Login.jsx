@@ -49,7 +49,7 @@ const Login = ({ loginOpen, setLoginOpen }) => {
   });
 
   const sendLog = ({ number }) => {
-    dispatch(getNumberThunk(number.toString()));
+    dispatch(getNumberThunk({ phone: number.toString() }));
   };
   const handleBlur = async (e) => {
     await trigger(e.target.name);
