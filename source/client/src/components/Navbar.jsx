@@ -11,19 +11,11 @@ import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
 import AccountCircle from "@mui/icons-material/AccountCircle";
-import SmartphoneIcon from "@mui/icons-material/Smartphone";
 import MoreIcon from "@mui/icons-material/MoreVert";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  InputAdornment,
-  TextField,
-} from "@mui/material";
+import { Button } from "@mui/material";
+
+import Login from "../pages/Login";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -240,38 +232,7 @@ const Navbar = () => {
           {renderMenu}
         </StyledAppbar>
       </AppBar>
-      <Dialog
-        open={loginOpen}
-        onClose={() => {
-          setLoginOpen(false);
-        }}
-      >
-        <DialogTitle>Login</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Let's start by entering your 10-Digit mobile number.
-          </DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="phone"
-            label="Phone Number"
-            type="number"
-            fullWidth
-            variant="filled"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SmartphoneIcon />
-                </InputAdornment>
-              ),
-            }}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button>confirm</Button>
-        </DialogActions>
-      </Dialog>
+      <Login loginOpen={loginOpen} setLoginOpen={setLoginOpen} />
     </Box>
   );
 };
