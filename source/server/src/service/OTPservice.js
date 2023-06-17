@@ -32,7 +32,7 @@ export const sendOTP = async (phoneNumber) => {
     console.log("OTP sent successfully!", response);
     return response;
   } catch (error) {
-    console.log(error);
+    console.log(error.response);
   }
   //const fast2smsLink = `https://www.fast2sms.com/dev/bulkV2?authorization=${process.env.FAST2SMS}&route=dlt&sender_id=${senderId}&message=${messageId}&variables_values=${otp}%7C&flash=0&numbers=${phoneNumber}`;
 };
