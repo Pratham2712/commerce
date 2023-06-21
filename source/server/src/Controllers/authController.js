@@ -4,8 +4,8 @@ import { sendOTP } from "../service/OTPservice.js";
 export const getPhoneController = async (req, res, next) => {
   try {
     const phoneNumber = req.body.phone;
-    const result = await sendOTP(phoneNumber);
-    //const result = true;
+    //const result = await sendOTP(phoneNumber);
+    const result = true;
     if (result) {
       res.status(200).json({
         type: SUCCESS,

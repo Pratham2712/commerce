@@ -5,20 +5,18 @@ import {
   FAILURE,
   ERROR,
   IDLE,
+  FULFILLED,
 } from "../../constants/constants";
 import axios from "axios";
 
-export const getNumberThunk = createAsyncThunk(
-  "/auth/get_phone",
-  async (data) => {
-    try {
-      const res = await axios.post(`${BASE_URL}/auth/get_phone`, data);
-      return res.data;
-    } catch (error) {
-      return error.response.data;
-    }
+export const loginThunk = createAsyncThunk("/auth/get_phone", async (data) => {
+  try {
+    const res = await axios.post(`${BASE_URL}/auth/login`, data);
+    return res.data;
+  } catch (error) {
+    return error.response.data;
   }
-);
+});
 const initialState = {
   loading: false,
   updateDone: false,
@@ -30,10 +28,10 @@ const initialState = {
   isError: false,
   isLogin: false,
   data: {
-    phoneNumber: "",
+    userInfo: [],
   },
   status: {
-    getNumberThunk: IDLE,
+    loginThunk: IDLE,
   },
 };
 
@@ -43,14 +41,15 @@ const userInfoSlice = createSlice({
   reducers: {},
   extraReducers: (builders) => {
     builders
-      .addCase(getNumberThunk.pending, (state, { payload }) => {
+      .addCase(loginThunk.pending, (state, { payload }) => {
         state.loading = true;
       })
-      .addCase(getNumberThunk.fulfilled, (state, { payload }) => {
+      .addCase(loginThunk.fulfilled, (state, { payload }) => {
         switch (payload.type) {
           case SUCCESS:
-            state.data.phoneNumber = payload.data.phoneNumber;
+            state.data.userInfo = payload.data.userInfo;
             state.loading = false;
+            state.status.loginThunk = FULFILLED;
             break;
           default:
             state.isError = true;
@@ -63,8 +62,8 @@ const userInfoSlice = createSlice({
             break;
         }
       })
-      .addCase(getNumberThunk.rejected, (state, action) => {
-        state.status.getNumberThunk = ERROR;
+      .addCase(loginThunk.rejected, (state, action) => {
+        state.status.loginThunk = ERROR;
         state.loading = false;
         state.errorData = action.error.message;
       });
