@@ -1,17 +1,20 @@
 import { FAILURE, SUCCESS } from "../constants/constants.js";
 import { sendOTP } from "../service/OTPservice.js";
 
-export const getPhoneController = async (req, res, next) => {
+export const loginController = async (req, res, next) => {
   try {
-    const phoneNumber = req.body.phone;
-    //const result = await sendOTP(phoneNumber);
-    const result = true;
+    const data = {
+      email: req.body?.email,
+      password: req.body?.password,
+    };
+    const result = await loginService(data);
+    //const result = true;
     if (result) {
       res.status(200).json({
         type: SUCCESS,
         message: "OTP send successfully",
         data: {
-          phoneNumber: req.body.phoneNumber,
+          data: result,
         },
       });
     } else {
