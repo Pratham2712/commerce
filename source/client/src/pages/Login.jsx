@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import MailIcon from "@mui/icons-material/Mail";
+import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import PasswordIcon from "@mui/icons-material/Password";
 import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import {
+  Alert,
   Button,
   Dialog,
   DialogActions,
@@ -14,6 +16,7 @@ import {
   IconButton,
   InputAdornment,
   Skeleton,
+  Snackbar,
   TextField,
   Typography,
 } from "@mui/material";
@@ -22,22 +25,46 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { ErrorMessage } from "@hookform/error-message";
 import { useDispatch, useSelector } from "react-redux";
-import { getNumberThunk, loginThunk } from "../redux/slices/UserInfoSlice";
+import {
+  checkUsernameThunk,
+  getNumberThunk,
+  loginThunk,
+} from "../redux/slices/UserInfoSlice";
 
 const Login = ({ loginOpen, setLoginOpen }) => {
   const [showPassword, setShowPassword] = useState(false);
+  const [state, setState] = useState({
+    open: false,
+    vertical: "top",
+    horizontal: "center",
+  });
+  const { vertical, horizontal, open } = state;
+
   const dispatch = useDispatch();
+
   //useSelector
   const loading = useSelector(
     (state) => state.rootReducer.UserInfoSlice.data.loading
   );
+
+  const isUsername = useSelector(
+    (state) => state.rootReducer.UserInfoSlice.data.userName
+  );
+
+  const showError = useSelector(
+    (state) => state.rootReducer.UserInfoSlice.isError
+  );
+  console.log(showError);
+  const errorMsg = useSelector(
+    (state) => state.rootReducer.UserInfoSlice.errorData.message
+  );
   //schema
   const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
   const schema = yup.object().shape({
-    email: yup
-      .string()
-      .required("Email is required")
-      .matches(emailRegex, "Invalid email address"),
+    // email: yup
+    //   .string()
+    //   .required("Email is required")
+    //   .matches(emailRegex, "Invalid email address"),
     password: yup
       .string()
       .min(3, "password must contain 3 letters")
@@ -47,6 +74,15 @@ const Login = ({ loginOpen, setLoginOpen }) => {
       .string()
       .oneOf([yup.ref("password"), null], "Passwords must match")
       .required("Confirm Password is required"),
+    username: yup
+      .string()
+      .test("isUsernameTaken", "Username is already taken", (value) => {
+        if (isUsername) {
+          return false; // Validation fails when isUsername is true
+        }
+        return true; // Validation passes when isUsername is false
+      })
+      .required("Username is required"),
   });
 
   //useForm
@@ -55,12 +91,16 @@ const Login = ({ loginOpen, setLoginOpen }) => {
     handleSubmit,
     formState: { errors, isDirty, isValidating },
     trigger,
+    watch,
+    setValue,
+    setError,
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      email: "",
+      //email: "",
       password: "",
       confrim: "",
+      username: "",
     },
   });
 
@@ -68,14 +108,46 @@ const Login = ({ loginOpen, setLoginOpen }) => {
   const handleTogglePassword = () => {
     setShowPassword(!showPassword);
   };
-  const sendLog = ({ email, password }) => {
-    dispatch(loginThunk({ email: email, password: password }));
+  const onSubmit = ({ username, password }) => {
+    const data = {
+      username: username.toString(),
+      password: password.toString(),
+    };
+    dispatch(loginThunk(data));
   };
   const handleBlur = async (e) => {
     await trigger(e.target.name);
   };
+
+  const handleUsernameChange = (event, name) => {
+    setValue(name, event.target.value); // Update the value of the username field
+    trigger(name); // Trigger validation when the username value changes
+  };
+
+  //useEffect
+  const username = watch("username");
+  useEffect(() => {
+    dispatch(checkUsernameThunk({ data: username.trim() })).then((data) => {
+      if (data.payload.data) {
+        setError("username", {
+          type: "manual",
+          message: "Username is already taken",
+        });
+      }
+    });
+  }, [username]);
+
   return (
     <>
+      <Snackbar
+        open={showError}
+        anchorOrigin={{ vertical, horizontal }}
+        autoHideDuration={6000}
+      >
+        <Alert severity="error" variant="filled" sx={{ width: "100%" }}>
+          {errorMsg}
+        </Alert>
+      </Snackbar>
       {loading ? (
         <Skeleton variant="rounded" width={210} height={60} />
       ) : (
@@ -88,7 +160,7 @@ const Login = ({ loginOpen, setLoginOpen }) => {
           <DialogTitle>Login</DialogTitle>
           <DialogContent>
             <DialogContentText></DialogContentText>
-            <TextField
+            {/* <TextField
               autoFocus
               margin="dense"
               id="email"
@@ -115,6 +187,35 @@ const Login = ({ loginOpen, setLoginOpen }) => {
                   <span style={{ color: "maroon" }}>{message}</span>
                 )}
               />
+            </Typography> */}
+            <TextField
+              autoFocus
+              margin="dense"
+              id="username"
+              label="Enter username"
+              name="username"
+              type="text"
+              fullWidth
+              variant="filled"
+              {...register("username")}
+              onBlur={handleBlur}
+              onChange={(e) => handleUsernameChange(e, "username")}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <AccountBoxIcon />
+                  </InputAdornment>
+                ),
+              }}
+            />
+            <Typography sx={{ height: "1.5rem", fontSize: "0.8rem" }}>
+              <ErrorMessage
+                errors={errors}
+                name="username"
+                render={({ message }) => (
+                  <span style={{ color: "maroon" }}>{message}</span>
+                )}
+              />
             </Typography>
             <TextField
               margin="dense"
@@ -125,6 +226,7 @@ const Login = ({ loginOpen, setLoginOpen }) => {
               fullWidth
               variant="filled"
               {...register("password")}
+              onChange={(e) => handleUsernameChange(e, "password")}
               onBlur={handleBlur}
               InputProps={{
                 startAdornment: (
@@ -141,7 +243,7 @@ const Login = ({ loginOpen, setLoginOpen }) => {
                 ),
               }}
             />
-            <Typography sx={{ height: "1.5rem" }}>
+            <Typography sx={{ height: "1.5rem", fontSize: "0.8rem" }}>
               <ErrorMessage
                 errors={errors}
                 name="password"
@@ -159,6 +261,7 @@ const Login = ({ loginOpen, setLoginOpen }) => {
               fullWidth
               variant="filled"
               {...register("confirm")}
+              onChange={(e) => handleUsernameChange(e, "confirm")}
               onBlur={handleBlur}
               InputProps={{
                 startAdornment: (
@@ -168,7 +271,7 @@ const Login = ({ loginOpen, setLoginOpen }) => {
                 ),
               }}
             />
-            <Typography sx={{ height: "1.5rem" }}>
+            <Typography sx={{ height: "1.5rem", fontSize: "0.8rem" }}>
               <ErrorMessage
                 errors={errors}
                 name="confirm"
@@ -182,8 +285,13 @@ const Login = ({ loginOpen, setLoginOpen }) => {
             <Button
               variant="outlined"
               type="submit"
-              disabled={!isDirty || isValidating}
-              onClick={handleSubmit(sendLog)}
+              // onClick={() => {
+              //   if (!!errors && errors.username?.type === "manual") {
+              //     return; // Do not submit the form when a manual error is present
+              //   }
+              //   handleSubmit(onSubmit);
+              // }}
+              onClick={handleSubmit(onSubmit)}
             >
               confirm
             </Button>

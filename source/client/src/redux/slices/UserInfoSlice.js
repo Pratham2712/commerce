@@ -9,7 +9,20 @@ import {
 } from "../../constants/constants";
 import axios from "axios";
 
-export const loginThunk = createAsyncThunk("/auth/get_phone", async (data) => {
+export const checkUsernameThunk = createAsyncThunk(
+  "/auth/checkUser",
+  async (data) => {
+    console.log("slice", data);
+    try {
+      const res = await axios.post(`${BASE_URL}/auth/checkUser`, data);
+      return res.data;
+    } catch (error) {
+      return error.response.data;
+    }
+  }
+);
+
+export const loginThunk = createAsyncThunk("/auth/login", async (data) => {
   try {
     const res = await axios.post(`${BASE_URL}/auth/login`, data);
     return res.data;
@@ -29,16 +42,23 @@ const initialState = {
   isLogin: false,
   data: {
     userInfo: [],
+    userName: false,
   },
   status: {
     loginThunk: IDLE,
+    checkUsernameThunk: IDLE,
   },
 };
 
 const userInfoSlice = createSlice({
   name: "userInfo",
   initialState: initialState,
-  reducers: {},
+  reducers: {
+    setCustomAlert: (state, action) => {
+      state.isError = false;
+      state.errorData = {};
+    },
+  },
   extraReducers: (builders) => {
     builders
       .addCase(loginThunk.pending, (state, { payload }) => {
@@ -64,6 +84,37 @@ const userInfoSlice = createSlice({
       })
       .addCase(loginThunk.rejected, (state, action) => {
         state.status.loginThunk = ERROR;
+        state.loading = false;
+        state.errorData = action.error.message;
+      })
+      //checkUsernameThunk===============================================================================================
+      .addCase(checkUsernameThunk.pending, (state, { payload }) => {
+        state.loading = true;
+      })
+      .addCase(checkUsernameThunk.fulfilled, (state, { payload }) => {
+        switch (payload.type) {
+          case FAILURE:
+            state.data.userName = payload.data;
+            state.loading = false;
+            state.status.checkUsernameThunk = FULFILLED;
+            break;
+          case SUCCESS:
+            state.data.userName = payload.data;
+            state.loading = false;
+            state.status.checkUsernameThunk = FULFILLED;
+          default:
+            //state.isError = true;
+            state.loading = false;
+            state.errorData = {
+              message: payload.message,
+              type: payload.type,
+              errors: payload.errors,
+            };
+            break;
+        }
+      })
+      .addCase(checkUsernameThunk.rejected, (state, action) => {
+        state.status.checkUsernameThunk = ERROR;
         state.loading = false;
         state.errorData = action.error.message;
       });
