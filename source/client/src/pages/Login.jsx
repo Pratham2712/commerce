@@ -27,12 +27,14 @@ import { ErrorMessage } from "@hookform/error-message";
 import { useDispatch, useSelector } from "react-redux";
 import {
   checkUsernameThunk,
+  clearErrorSlice,
   getNumberThunk,
   loginThunk,
 } from "../redux/slices/UserInfoSlice";
 
 const Login = ({ loginOpen, setLoginOpen }) => {
   const [showPassword, setShowPassword] = useState(false);
+  const [exist, setExist] = useState(false);
   const [state, setState] = useState({
     open: false,
     vertical: "top",
@@ -48,13 +50,12 @@ const Login = ({ loginOpen, setLoginOpen }) => {
   );
 
   const isUsername = useSelector(
-    (state) => state.rootReducer.UserInfoSlice.data.userName
+    (state) => state.rootReducer.UserInfoSlice.data.userExist
   );
 
   const showError = useSelector(
     (state) => state.rootReducer.UserInfoSlice.isError
   );
-  console.log(showError);
   const errorMsg = useSelector(
     (state) => state.rootReducer.UserInfoSlice.errorData.message
   );
@@ -74,15 +75,14 @@ const Login = ({ loginOpen, setLoginOpen }) => {
       .string()
       .oneOf([yup.ref("password"), null], "Passwords must match")
       .required("Confirm Password is required"),
-    username: yup
-      .string()
-      .test("isUsernameTaken", "Username is already taken", (value) => {
-        if (isUsername) {
-          return false; // Validation fails when isUsername is true
-        }
-        return true; // Validation passes when isUsername is false
-      })
-      .required("Username is required"),
+    username: yup.string().required("Username is required"),
+    // .test("isUsernameTaken", "Username is already taken", (value) => {
+    //   console.log(exist);
+    //   if (exist) {
+    //     return false;
+    //   }
+    //   return true; // Validation passes when isUsername is false
+    // }),
   });
 
   //useForm
@@ -103,48 +103,66 @@ const Login = ({ loginOpen, setLoginOpen }) => {
       username: "",
     },
   });
-
   //function
   const handleTogglePassword = () => {
     setShowPassword(!showPassword);
   };
   const onSubmit = ({ username, password }) => {
-    const data = {
-      username: username.toString(),
-      password: password.toString(),
+    const detail = {
+      username: username,
+      password: password,
     };
-    dispatch(loginThunk(data));
-  };
-  const handleBlur = async (e) => {
-    await trigger(e.target.name);
-  };
-
-  const handleUsernameChange = (event, name) => {
-    setValue(name, event.target.value); // Update the value of the username field
-    trigger(name); // Trigger validation when the username value changes
-  };
-
-  //useEffect
-  const username = watch("username");
-  useEffect(() => {
     dispatch(checkUsernameThunk({ data: username.trim() })).then((data) => {
-      if (data.payload.data) {
+      if (data.payload.data === false) {
+        dispatch(loginThunk(detail));
+        setLoginOpen(false);
+      } else {
         setError("username", {
           type: "manual",
           message: "Username is already taken",
         });
       }
     });
-  }, [username]);
+  };
+  const handleBlur = async (e) => {
+    await trigger(e.target.name);
+  };
+
+  const clearError = () => {
+    dispatch(clearErrorSlice());
+  };
+  const handleUsernameChange = (event, name) => {
+    setValue(name, event.target.value); // Update the value of the username field
+    trigger(name); // Trigger validation when the username value changes
+  };
+
+  //useEffect
+  //const username = watch("username");
+  // useEffect(() => {
+  //   dispatch(checkUsernameThunk({ data: username.trim() })).then((data) => {
+  //     if (data.payload.data) {
+  //       setError("username", {
+  //         type: "manual",
+  //         message: "Username is already taken",
+  //       });
+  //     }
+  //   });
+  // }, [username]);
 
   return (
     <>
       <Snackbar
         open={showError}
         anchorOrigin={{ vertical, horizontal }}
-        autoHideDuration={6000}
+        autoHideDuration={3000}
+        onClose={clearError}
       >
-        <Alert severity="error" variant="filled" sx={{ width: "100%" }}>
+        <Alert
+          severity="error"
+          variant="filled"
+          onClose={clearError}
+          sx={{ width: "100%" }}
+        >
           {errorMsg}
         </Alert>
       </Snackbar>

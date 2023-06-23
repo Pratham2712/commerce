@@ -12,7 +12,6 @@ import axios from "axios";
 export const checkUsernameThunk = createAsyncThunk(
   "/auth/checkUser",
   async (data) => {
-    console.log("slice", data);
     try {
       const res = await axios.post(`${BASE_URL}/auth/checkUser`, data);
       return res.data;
@@ -24,6 +23,7 @@ export const checkUsernameThunk = createAsyncThunk(
 
 export const loginThunk = createAsyncThunk("/auth/login", async (data) => {
   try {
+    // const res = await axios.post(`${BASE_URL}/set_cookie`, data);
     const res = await axios.post(`${BASE_URL}/auth/login`, data);
     return res.data;
   } catch (error) {
@@ -42,7 +42,7 @@ const initialState = {
   isLogin: false,
   data: {
     userInfo: [],
-    userName: false,
+    userExist: false,
   },
   status: {
     loginThunk: IDLE,
@@ -54,9 +54,12 @@ const userInfoSlice = createSlice({
   name: "userInfo",
   initialState: initialState,
   reducers: {
-    setCustomAlert: (state, action) => {
+    clearErrorSlice: (state, action) => {
       state.isError = false;
       state.errorData = {};
+    },
+    changeUserExist: (state) => {
+      state.data.userExist = false;
     },
   },
   extraReducers: (builders) => {
@@ -94,12 +97,12 @@ const userInfoSlice = createSlice({
       .addCase(checkUsernameThunk.fulfilled, (state, { payload }) => {
         switch (payload.type) {
           case FAILURE:
-            state.data.userName = payload.data;
+            state.data.userExist = payload.data;
             state.loading = false;
             state.status.checkUsernameThunk = FULFILLED;
             break;
           case SUCCESS:
-            state.data.userName = payload.data;
+            state.data.userExist = payload.data;
             state.loading = false;
             state.status.checkUsernameThunk = FULFILLED;
           default:
@@ -122,3 +125,4 @@ const userInfoSlice = createSlice({
 });
 
 export default userInfoSlice.reducer;
+export const { clearErrorSlice, changeUserExist } = userInfoSlice.actions;
