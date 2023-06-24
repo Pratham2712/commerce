@@ -12,13 +12,9 @@ axios.defaults.withCredentials = true;
 
 const connect = async () => {
   try {
-    const conn = await mongoose
-      .connect(
-        "mongodb+srv://prathamvaishya:pratham27122001@todo.fggkco1.mongodb.net/?retryWrites=true&w=majority"
-      )
-      .then((data) => {
-        console.log("MongoDB connected successfully", data.connection.host);
-      });
+    const conn = await mongoose.connect(process.env.MONGO_URI).then((data) => {
+      console.log("MongoDB connected successfully", data.connection.host);
+    });
   } catch (error) {
     console.log(error);
   }
