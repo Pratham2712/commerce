@@ -21,15 +21,21 @@ export const checkUsernameThunk = createAsyncThunk(
   }
 );
 
+const config = {
+  headers: {
+    "Content-Type": "application/json",
+  },
+  withCredentials: true,
+};
 export const loginThunk = createAsyncThunk("/auth/login", async (data) => {
   try {
-    // const res = await axios.post(`${BASE_URL}/set_cookie`, data);
-    const res = await axios.post(`${BASE_URL}/auth/login`, data);
+    const res = await axios.post(`${BASE_URL}/auth/login`, data, config);
     return res.data;
   } catch (error) {
     return error.response.data;
   }
 });
+
 const initialState = {
   loading: false,
   updateDone: false,

@@ -28,6 +28,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   checkUsernameThunk,
   clearErrorSlice,
+  cookieThunk,
   getNumberThunk,
   loginThunk,
 } from "../redux/slices/UserInfoSlice";
@@ -148,7 +149,7 @@ const Login = ({ loginOpen, setLoginOpen }) => {
   //     }
   //   });
   // }, [username]);
-
+ 
   return (
     <>
       <Snackbar
