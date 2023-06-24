@@ -5,20 +5,31 @@ import {
   FAILURE,
   ERROR,
   IDLE,
+  FULFILLED,
 } from "../../constants/constants";
 import axios from "axios";
 
-export const getNumberThunk = createAsyncThunk(
-  "/auth/get_phone",
+export const checkUsernameThunk = createAsyncThunk(
+  "/auth/checkUser",
   async (data) => {
     try {
-      const res = await axios.post(`${BASE_URL}/auth/get_phone`, data);
+      const res = await axios.post(`${BASE_URL}/auth/checkUser`, data);
       return res.data;
     } catch (error) {
       return error.response.data;
     }
   }
 );
+
+export const loginThunk = createAsyncThunk("/auth/login", async (data) => {
+  try {
+    // const res = await axios.post(`${BASE_URL}/set_cookie`, data);
+    const res = await axios.post(`${BASE_URL}/auth/login`, data);
+    return res.data;
+  } catch (error) {
+    return error.response.data;
+  }
+});
 const initialState = {
   loading: false,
   updateDone: false,
@@ -30,27 +41,38 @@ const initialState = {
   isError: false,
   isLogin: false,
   data: {
-    phoneNumber: "",
+    userInfo: [],
+    userExist: false,
   },
   status: {
-    getNumberThunk: IDLE,
+    loginThunk: IDLE,
+    checkUsernameThunk: IDLE,
   },
 };
 
 const userInfoSlice = createSlice({
   name: "userInfo",
   initialState: initialState,
-  reducers: {},
+  reducers: {
+    clearErrorSlice: (state, action) => {
+      state.isError = false;
+      state.errorData = {};
+    },
+    changeUserExist: (state) => {
+      state.data.userExist = false;
+    },
+  },
   extraReducers: (builders) => {
     builders
-      .addCase(getNumberThunk.pending, (state, { payload }) => {
+      .addCase(loginThunk.pending, (state, { payload }) => {
         state.loading = true;
       })
-      .addCase(getNumberThunk.fulfilled, (state, { payload }) => {
+      .addCase(loginThunk.fulfilled, (state, { payload }) => {
         switch (payload.type) {
           case SUCCESS:
-            state.data.phoneNumber = payload.data.phoneNumber;
+            state.data.userInfo = payload.data.userInfo;
             state.loading = false;
+            state.status.loginThunk = FULFILLED;
             break;
           default:
             state.isError = true;
@@ -63,8 +85,39 @@ const userInfoSlice = createSlice({
             break;
         }
       })
-      .addCase(getNumberThunk.rejected, (state, action) => {
-        state.status.getNumberThunk = ERROR;
+      .addCase(loginThunk.rejected, (state, action) => {
+        state.status.loginThunk = ERROR;
+        state.loading = false;
+        state.errorData = action.error.message;
+      })
+      //checkUsernameThunk===============================================================================================
+      .addCase(checkUsernameThunk.pending, (state, { payload }) => {
+        state.loading = true;
+      })
+      .addCase(checkUsernameThunk.fulfilled, (state, { payload }) => {
+        switch (payload.type) {
+          case FAILURE:
+            state.data.userExist = payload.data;
+            state.loading = false;
+            state.status.checkUsernameThunk = FULFILLED;
+            break;
+          case SUCCESS:
+            state.data.userExist = payload.data;
+            state.loading = false;
+            state.status.checkUsernameThunk = FULFILLED;
+          default:
+            //state.isError = true;
+            state.loading = false;
+            state.errorData = {
+              message: payload.message,
+              type: payload.type,
+              errors: payload.errors,
+            };
+            break;
+        }
+      })
+      .addCase(checkUsernameThunk.rejected, (state, action) => {
+        state.status.checkUsernameThunk = ERROR;
         state.loading = false;
         state.errorData = action.error.message;
       });
@@ -72,3 +125,4 @@ const userInfoSlice = createSlice({
 });
 
 export default userInfoSlice.reducer;
+export const { clearErrorSlice, changeUserExist } = userInfoSlice.actions;

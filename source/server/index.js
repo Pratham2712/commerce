@@ -21,16 +21,34 @@ connect();
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://192.168.1.12:3001",
+    credentials: true,
+  })
+);
+// app.use((req, res, next) => {
+//   res.setHeader("Access-Control-Allow-Credentials", "true");
+//   next();
+// });
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(express.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
   res.status(200).json({ data: "success" });
 });
 // Routes
 app.use("/auth", authRouter);
+app.post("/set_cookie", async (req, res) => {
+  return res
+    .cookie("token", "1234", {
+      expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
+      httpOnly: true,
+    })
+    .status(200)
+    .send("cookie stored");
+});
 app.listen(8000, () => {
   console.log("Listening on port 8000");
 });

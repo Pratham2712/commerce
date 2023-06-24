@@ -1,8 +1,12 @@
 import { Router } from "express";
-import { getPhoneController } from "../Controllers/authController.js";
+import {
+  loginController,
+  checkUserController,
+} from "../Controllers/authController.js";
 
 const authRouter = Router();
 
-authRouter.post("/get_phone", getPhoneController);
+authRouter.post("/checkUser", checkUserController);
+authRouter.post("/login", loginController);
 
 export { authRouter };

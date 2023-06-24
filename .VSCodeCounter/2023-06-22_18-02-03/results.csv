@@ -1,0 +1,33 @@
+"filename", "language", "JSON", "JavaScript", "JavaScript JSX", "HTML", "XML", "CSS", "Markdown", "comment", "blank", "total"
+"c:\Users\Rentkar\Desktop\com\commerce\source\client\README.md", "Markdown", 0, 0, 0, 0, 0, 0, 38, 0, 33, 71
+"c:\Users\Rentkar\Desktop\com\commerce\source\client\package-lock.json", "JSON", 31169, 0, 0, 0, 0, 0, 0, 0, 1, 31170
+"c:\Users\Rentkar\Desktop\com\commerce\source\client\package.json", "JSON", 51, 0, 0, 0, 0, 0, 0, 0, 1, 52
+"c:\Users\Rentkar\Desktop\com\commerce\source\client\public\index.html", "HTML", 0, 0, 0, 20, 0, 0, 0, 23, 1, 44
+"c:\Users\Rentkar\Desktop\com\commerce\source\client\public\manifest.json", "JSON", 25, 0, 0, 0, 0, 0, 0, 0, 1, 26
+"c:\Users\Rentkar\Desktop\com\commerce\source\client\src\App.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"c:\Users\Rentkar\Desktop\com\commerce\source\client\src\App.js", "JavaScript", 0, 15, 0, 0, 0, 0, 0, 0, 2, 17
+"c:\Users\Rentkar\Desktop\com\commerce\source\client\src\App.test.js", "JavaScript", 0, 7, 0, 0, 0, 0, 0, 0, 2, 9
+"c:\Users\Rentkar\Desktop\com\commerce\source\client\src\Routess.js", "JavaScript", 0, 13, 0, 0, 0, 0, 0, 0, 2, 15
+"c:\Users\Rentkar\Desktop\com\commerce\source\client\src\components\Navbar.jsx", "JavaScript JSX", 0, 0, 225, 0, 0, 0, 0, 1, 15, 241
+"c:\Users\Rentkar\Desktop\com\commerce\source\client\src\constants\constants.js", "JavaScript", 0, 19, 0, 0, 0, 0, 0, 0, 1, 20
+"c:\Users\Rentkar\Desktop\com\commerce\source\client\src\constants\links.js", "JavaScript", 0, 2, 0, 0, 0, 0, 0, 0, 0, 2
+"c:\Users\Rentkar\Desktop\com\commerce\source\client\src\index.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"c:\Users\Rentkar\Desktop\com\commerce\source\client\src\index.js", "JavaScript", 0, 14, 0, 0, 0, 0, 0, 3, 1, 18
+"c:\Users\Rentkar\Desktop\com\commerce\source\client\src\logo.svg", "XML", 0, 0, 0, 0, 1, 0, 0, 0, 0, 1
+"c:\Users\Rentkar\Desktop\com\commerce\source\client\src\pages\Home.jsx", "JavaScript JSX", 0, 0, 10, 0, 0, 0, 0, 0, 2, 12
+"c:\Users\Rentkar\Desktop\com\commerce\source\client\src\pages\Login.jsx", "JavaScript JSX", 0, 0, 250, 0, 0, 0, 0, 44, 12, 306
+"c:\Users\Rentkar\Desktop\com\commerce\source\client\src\redux\app\store.js", "JavaScript", 0, 10, 0, 0, 0, 0, 0, 0, 3, 13
+"c:\Users\Rentkar\Desktop\com\commerce\source\client\src\redux\slices\UserInfoSlice.js", "JavaScript", 0, 118, 0, 0, 0, 0, 0, 2, 5, 125
+"c:\Users\Rentkar\Desktop\com\commerce\source\client\src\reportWebVitals.js", "JavaScript", 0, 12, 0, 0, 0, 0, 0, 0, 2, 14
+"c:\Users\Rentkar\Desktop\com\commerce\source\client\src\setupTests.js", "JavaScript", 0, 1, 0, 0, 0, 0, 0, 4, 1, 6
+"c:\Users\Rentkar\Desktop\com\commerce\source\server\index.js", "JavaScript", 0, 29, 0, 0, 0, 0, 0, 1, 7, 37
+"c:\Users\Rentkar\Desktop\com\commerce\source\server\package-lock.json", "JSON", 2621, 0, 0, 0, 0, 0, 0, 0, 1, 2622
+"c:\Users\Rentkar\Desktop\com\commerce\source\server\package.json", "JSON", 25, 0, 0, 0, 0, 0, 0, 0, 1, 26
+"c:\Users\Rentkar\Desktop\com\commerce\source\server\src\Controllers\authController.js", "JavaScript", 0, 55, 0, 0, 0, 0, 0, 1, 4, 60
+"c:\Users\Rentkar\Desktop\com\commerce\source\server\src\Models\userModel.js", "JavaScript", 0, 80, 0, 0, 0, 0, 0, 2, 5, 87
+"c:\Users\Rentkar\Desktop\com\commerce\source\server\src\Routes\authRouter.js", "JavaScript", 0, 9, 0, 0, 0, 0, 0, 0, 4, 13
+"c:\Users\Rentkar\Desktop\com\commerce\source\server\src\constants\constants.js", "JavaScript", 0, 2, 0, 0, 0, 0, 0, 0, 1, 3
+"c:\Users\Rentkar\Desktop\com\commerce\source\server\src\middlewares\authMiddlewares.js", "JavaScript", 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"c:\Users\Rentkar\Desktop\com\commerce\source\server\src\service\OTPservice.js", "JavaScript", 0, 34, 0, 0, 0, 0, 0, 1, 4, 39
+"c:\Users\Rentkar\Desktop\com\commerce\source\server\src\service\authService.js", "JavaScript", 0, 9, 0, 0, 0, 0, 0, 0, 4, 13
+"Total", "-", 33891, 429, 485, 20, 1, 0, 38, 82, 119, 35065
