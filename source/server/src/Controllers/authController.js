@@ -40,9 +40,8 @@ export const loginController = async (req, res, next) => {
       const token = {
         _id: result._id,
       };
-      const jwtToken = await jwt.sign(token, "fhoehrewhohfh8");
-      console.log(jwtToken);
-      res
+      const jwtToken = await jwt.sign(token, "secret");
+      return res
         .status(200)
         .cookie("USER_TOKEN", jwtToken)
         .json({

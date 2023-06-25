@@ -16,6 +16,7 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { Button } from "@mui/material";
 
 import Login from "../pages/Login";
+import { useSelector } from "react-redux";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -68,6 +69,9 @@ const Navbar = () => {
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+
+  const isLogin = useSelector((state) => state.rootReducer.UserInfoSlice.isLogin);
+  const userName = useSelector((state) => state.rootReducer.UserInfoSlice.data.userInfo.username);
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -137,9 +141,10 @@ const Navbar = () => {
         <Button
           variant="outlined"
           sx={{ color: "black", borderColor: "black" }}
-          onClick={() => setLoginOpen(!loginOpen)}
+          onClick={() => !isLogin ? setLoginOpen(!loginOpen):""}
+          
         >
-          Login/Signup
+          {isLogin ? userName : "Login/Signup"}
         </Button>
       </MenuItem>
 
@@ -159,6 +164,8 @@ const Navbar = () => {
   );
 
   return (
+    <>
+    
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="fixed">
         <StyledAppbar>
@@ -185,9 +192,9 @@ const Navbar = () => {
             <Button
               variant="outlined"
               sx={{ color: "white", borderColor: "white" }}
-              onClick={() => setLoginOpen(!loginOpen)}
+              onClick={() => !isLogin ? setLoginOpen(!loginOpen):""}
             >
-              Login/Signup
+              {isLogin ? userName : "Login/Signup"}
             </Button>
           </Box>
           <Box sx={{ flexGrow: 0.13 }} />
@@ -234,6 +241,7 @@ const Navbar = () => {
       </AppBar>
       <Login loginOpen={loginOpen} setLoginOpen={setLoginOpen} />
     </Box>
+    </>
   );
 };
 

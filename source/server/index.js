@@ -4,11 +4,10 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import dotenv from "dotenv";
 import { authRouter } from "./src/Routes/authRouter.js";
-import axios from "axios";
+import { verifyToken } from "./src/middlewares/jwtMiddlewares.js";
+import { homeRouter } from "./src/Routes/homeRouter.js";
 
 dotenv.config();
-
-axios.defaults.withCredentials = true;
 
 const connect = async () => {
   try {
@@ -34,6 +33,7 @@ app.get("/", (req, res) => {
 });
 // Routes
 app.use("/auth", authRouter);
+app.use("/home", verifyToken, homeRouter);
 app.listen(8000, () => {
   console.log("Listening on port 8000");
 });

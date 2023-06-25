@@ -32,10 +32,12 @@ import {
   getNumberThunk,
   loginThunk,
 } from "../redux/slices/UserInfoSlice";
+import { SUCCESS } from "../constants/constants";
 
 const Login = ({ loginOpen, setLoginOpen }) => {
   const [showPassword, setShowPassword] = useState(false);
-  const [exist, setExist] = useState(false);
+
+  const [successMsg, setSuccessMsg] = useState(false);
   const [state, setState] = useState({
     open: false,
     vertical: "top",
@@ -53,7 +55,6 @@ const Login = ({ loginOpen, setLoginOpen }) => {
   const isUsername = useSelector(
     (state) => state.rootReducer.UserInfoSlice.data.userExist
   );
-
   const showError = useSelector(
     (state) => state.rootReducer.UserInfoSlice.isError
   );
@@ -115,7 +116,11 @@ const Login = ({ loginOpen, setLoginOpen }) => {
     };
     dispatch(checkUsernameThunk({ data: username.trim() })).then((data) => {
       if (data.payload.data === false) {
-        dispatch(loginThunk(detail));
+        dispatch(loginThunk(detail)).then((data) => {
+          if(data.payload.type === SUCCESS){
+            setSuccessMsg(true);
+          }
+        })
         setLoginOpen(false);
       } else {
         setError("username", {
@@ -165,6 +170,21 @@ const Login = ({ loginOpen, setLoginOpen }) => {
           sx={{ width: "100%" }}
         >
           {errorMsg}
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        open={successMsg}
+        anchorOrigin={{ vertical, horizontal }}
+        autoHideDuration={3000}
+        onClose={() => {setSuccessMsg(false)}}
+      >
+        <Alert
+          severity="success"
+          variant="filled"
+          onClose={() => {setSuccessMsg(false)}}
+          sx={{ width: "100%" }}
+        >
+          Logged in successfully
         </Alert>
       </Snackbar>
       {loading ? (

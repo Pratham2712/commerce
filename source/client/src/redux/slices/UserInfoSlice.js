@@ -9,6 +9,8 @@ import {
 } from "../../constants/constants";
 import axios from "axios";
 
+axios.defaults.withCredentials = true;
+
 export const checkUsernameThunk = createAsyncThunk(
   "/auth/checkUser",
   async (data) => {
@@ -21,15 +23,9 @@ export const checkUsernameThunk = createAsyncThunk(
   }
 );
 
-const config = {
-  headers: {
-    "Content-Type": "application/json",
-  },
-  withCredentials: true,
-};
 export const loginThunk = createAsyncThunk("/auth/login", async (data) => {
   try {
-    const res = await axios.post(`${BASE_URL}/auth/login`, data, config);
+    const res = await axios.post(`${BASE_URL}/auth/login`, data);
     return res.data;
   } catch (error) {
     return error.response.data;
@@ -43,6 +39,9 @@ const initialState = {
     message: "",
     type: "",
     errors: [],
+  },
+  successData: {
+    message: "",
   },
   isError: false,
   isLogin: false,
@@ -67,6 +66,9 @@ const userInfoSlice = createSlice({
     changeUserExist: (state) => {
       state.data.userExist = false;
     },
+    clearSuccessMsg: (state) => {
+      state.successData.message = "";
+    },
   },
   extraReducers: (builders) => {
     builders
@@ -76,8 +78,10 @@ const userInfoSlice = createSlice({
       .addCase(loginThunk.fulfilled, (state, { payload }) => {
         switch (payload.type) {
           case SUCCESS:
-            state.data.userInfo = payload.data.userInfo;
+            state.data.userInfo = payload.data.data;
+            state.successData.message = payload.data.message;
             state.loading = false;
+            state.isLogin = true;
             state.status.loginThunk = FULFILLED;
             break;
           default:
@@ -106,6 +110,11 @@ const userInfoSlice = createSlice({
             state.data.userExist = payload.data;
             state.loading = false;
             state.status.checkUsernameThunk = FULFILLED;
+            state.errorData = {
+              message: payload.message,
+              type: payload.type,
+              errors: payload.errors,
+            };
             break;
           case SUCCESS:
             state.data.userExist = payload.data;
@@ -131,4 +140,5 @@ const userInfoSlice = createSlice({
 });
 
 export default userInfoSlice.reducer;
-export const { clearErrorSlice, changeUserExist } = userInfoSlice.actions;
+export const { clearErrorSlice, changeUserExist, clearSuccessMsg } =
+  userInfoSlice.actions;

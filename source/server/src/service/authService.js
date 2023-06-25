@@ -4,7 +4,6 @@ import { promisify } from "util";
 
 export const checkUserService = async (data) => {
   const res = await userModel.find({ username: data });
-
   return res;
 };
 
