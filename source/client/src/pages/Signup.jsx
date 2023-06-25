@@ -19,26 +19,18 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import Link from "@mui/material/Link";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { ErrorMessage } from "@hookform/error-message";
 import { useDispatch, useSelector } from "react-redux";
-
-import {
-  checkUsernameThunk,
-  clearErrorSlice,
-  loginThunk,
-} from "../redux/slices/UserInfoSlice";
 import { SUCCESS } from "../constants/constants";
-import Signup from "./Signup";
+import { clearErrorSlice } from "../redux/slices/UserInfoSlice";
 
-const Login = ({ loginOpen, setLoginOpen }) => {
-  const [showPassword, setShowPassword] = useState(false);
-  const [signup,setSignup] = useState(false);
 
-  const [successMsg, setSuccessMsg] = useState(false);
+const Signup = ({signup,setSignup}) => {
+    const [showPassword, setShowPassword] = useState(false);
+    const [successMsg, setSuccessMsg] = useState(false);
   const [state, setState] = useState({
     open: false,
     vertical: "top",
@@ -53,9 +45,6 @@ const Login = ({ loginOpen, setLoginOpen }) => {
     (state) => state.rootReducer.UserInfoSlice.data.loading
   );
 
-  const isUsername = useSelector(
-    (state) => state.rootReducer.UserInfoSlice.data.userExist
-  );
   const showError = useSelector(
     (state) => state.rootReducer.UserInfoSlice.isError
   );
@@ -63,29 +52,13 @@ const Login = ({ loginOpen, setLoginOpen }) => {
     (state) => state.rootReducer.UserInfoSlice.errorData.message
   );
   //schema
-  const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
   const schema = yup.object().shape({
-    // email: yup
-    //   .string()
-    //   .required("Email is required")
-    //   .matches(emailRegex, "Invalid email address"),
     password: yup
       .string()
       .min(3, "password must contain 3 letters")
       .max(16, "password cannot exceed 16 letters")
       .required("Password is required"),
-    confirm: yup
-      .string()
-      .oneOf([yup.ref("password"), null], "Passwords must match")
-      .required("Confirm Password is required"),
     username: yup.string().required("Username is required"),
-    // .test("isUsernameTaken", "Username is already taken", (value) => {
-    //   console.log(exist);
-    //   if (exist) {
-    //     return false;
-    //   }
-    //   return true; // Validation passes when isUsername is false
-    // }),
   });
 
   //useForm
@@ -100,9 +73,7 @@ const Login = ({ loginOpen, setLoginOpen }) => {
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      //email: "",
       password: "",
-      confrim: "",
       username: "",
     },
   });
@@ -115,21 +86,7 @@ const Login = ({ loginOpen, setLoginOpen }) => {
       username: username,
       password: password,
     };
-    dispatch(checkUsernameThunk({ data: username.trim() })).then((data) => {
-      if (data.payload.data === false) {
-        dispatch(loginThunk(detail)).then((data) => {
-          if(data.payload.type === SUCCESS){
-            setSuccessMsg(true);
-          }
-        })
-        setLoginOpen(false);
-      } else {
-        setError("username", {
-          type: "manual",
-          message: "Username is already taken",
-        });
-      }
-    });
+    
   };
   const handleBlur = async (e) => {
     await trigger(e.target.name);
@@ -142,10 +99,9 @@ const Login = ({ loginOpen, setLoginOpen }) => {
     setValue(name, event.target.value); // Update the value of the username field
     trigger(name); // Trigger validation when the username value changes
   };
- 
   return (
     <>
-      <Snackbar
+      {/* <Snackbar
         open={showError}
         anchorOrigin={{ vertical, horizontal }}
         autoHideDuration={3000}
@@ -174,47 +130,19 @@ const Login = ({ loginOpen, setLoginOpen }) => {
         >
           Logged in successfully
         </Alert>
-      </Snackbar>
+      </Snackbar> */}
       {loading ? (
         <Skeleton variant="rounded" width={210} height={60} />
       ) : (
         <Dialog
-          open={loginOpen}
+          open={signup}
           onClose={() => {
-            setLoginOpen(false);
+            setSignup(false);
           }}
         >
-          <DialogTitle>Login</DialogTitle>
+          <DialogTitle>Signup</DialogTitle>
           <DialogContent>
             <DialogContentText></DialogContentText>
-            {/* <TextField
-              autoFocus
-              margin="dense"
-              id="email"
-              label="Email"
-              name="email"
-              type="text"
-              fullWidth
-              variant="filled"
-              {...register("email")}
-              onBlur={handleBlur}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <MailIcon />
-                  </InputAdornment>
-                ),
-              }}
-            />
-            <Typography sx={{ height: "1.5rem" }}>
-              <ErrorMessage
-                errors={errors}
-                name="email"
-                render={({ message }) => (
-                  <span style={{ color: "maroon" }}>{message}</span>
-                )}
-              />
-            </Typography> */}
             <TextField
               autoFocus
               margin="dense"
@@ -279,56 +207,22 @@ const Login = ({ loginOpen, setLoginOpen }) => {
                 )}
               />
             </Typography>
-            <TextField
-              margin="dense"
-              id="confirm"
-              label="Confirm password"
-              name="confirm"
-              type="password"
-              fullWidth
-              variant="filled"
-              {...register("confirm")}
-              onChange={(e) => handleUsernameChange(e, "confirm")}
-              onBlur={handleBlur}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <ConfirmationNumberIcon />
-                  </InputAdornment>
-                ),
-              }}
-            />
-            <Typography sx={{ height: "1.5rem", fontSize: "0.8rem" }}>
-              <ErrorMessage
-                errors={errors}
-                name="confirm"
-                render={({ message }) => (
-                  <span style={{ color: "maroon" }}>{message}</span>
-                )}
-              />
-            </Typography>
+            
           </DialogContent>
-          <DialogActions sx={{display:"flex",justifyContent:"space-between"}}>
-            <Link underline="hover" sx={{paddingLeft:"1rem",cursor:"pointer"}} onClick={() => {setSignup(true);setLoginOpen(false)}}> Already have account? Signup</Link>
+          <DialogActions>
             <Button
               variant="outlined"
               type="submit"
-              // onClick={() => {
-              //   if (!!errors && errors.username?.type === "manual") {
-              //     return; // Do not submit the form when a manual error is present
-              //   }
-              //   handleSubmit(onSubmit);
-              // }}
               onClick={handleSubmit(onSubmit)}
             >
-              confirm
+              Signup
             </Button>
           </DialogActions>
         </Dialog>
       )}
-      <Signup signup={signup} setSignup={setSignup}/>
+    
     </>
-  );
-};
+  )
+}
 
-export default Login;
+export default Signup
