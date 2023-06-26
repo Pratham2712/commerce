@@ -88,6 +88,7 @@ const Signup = ({ signup, setSignup }) => {
     dispatch(signupThunk(detail)).then((data) => {
       if (data.payload.type === SUCCESS) {
         setSuccessMsg(true);
+        setSignup(false);
       }
     });
   };

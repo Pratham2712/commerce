@@ -17,7 +17,10 @@ import { Button } from "@mui/material";
 
 import Login from "../pages/Login";
 import { useDispatch, useSelector } from "react-redux";
-import { checkUserLoginThunk } from "../redux/slices/UserInfoSlice";
+import {
+  checkUserLoginThunk,
+  logoutThunk,
+} from "../redux/slices/UserInfoSlice";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -114,7 +117,11 @@ const Navbar = () => {
       onClose={handleMenuClose}
     >
       <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>Logout</MenuItem>
+      {isLogin ? (
+        <MenuItem onClick={() => dispatch(logoutThunk())}>Logout</MenuItem>
+      ) : (
+        <></>
+      )}
     </Menu>
   );
   useEffect(() => {

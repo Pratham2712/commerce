@@ -53,6 +53,14 @@ export const signupThunk = createAsyncThunk("auth/signup", async (data) => {
   }
 });
 
+export const logoutThunk = createAsyncThunk("auth/logout", async () => {
+  try {
+    const res = await axios.get(`${BASE_URL}/auth/logout`);
+    return res.data;
+  } catch (error) {
+    return error.response.data;
+  }
+});
 const initialState = {
   loading: false,
   updateDone: false,
@@ -75,6 +83,7 @@ const initialState = {
     checkUsernameThunk: IDLE,
     checkUserLoginThunk: IDLE,
     signupThunk: IDLE,
+    logoutThunk: IDLE,
   },
 };
 
@@ -195,8 +204,7 @@ const userInfoSlice = createSlice({
       .addCase(signupThunk.fulfilled, (state, { payload }) => {
         switch (payload.type) {
           case SUCCESS:
-            state.data.userInfo = payload.data;
-            state.successData.message = payload.data.message;
+            state.data.userInfo = payload.data[0];
             state.loading = false;
             state.isLogin = true;
             state.status.signupThunk = FULFILLED;
@@ -215,6 +223,34 @@ const userInfoSlice = createSlice({
       })
       .addCase(signupThunk.rejected, (state, action) => {
         state.status.signupThunk = ERROR;
+        state.loading = false;
+        state.errorData = action.error.message;
+      })
+      //logoutThunk===============================================================================================
+      .addCase(logoutThunk.pending, (state, { payload }) => {
+        state.loading = true;
+      })
+      .addCase(logoutThunk.fulfilled, (state, { payload }) => {
+        switch (payload.type) {
+          case SUCCESS:
+            state.loading = false;
+            state.isLogin = false;
+            state.status.signupThunk = FULFILLED;
+            break;
+          default:
+            state.isLogin = false;
+            state.loading = false;
+            state.isError = true;
+            state.errorData = {
+              message: payload.message,
+              type: payload.type,
+              errors: payload.errors,
+            };
+            break;
+        }
+      })
+      .addCase(logoutThunk.rejected, (state, action) => {
+        state.status.logoutThunk = ERROR;
         state.loading = false;
         state.errorData = action.error.message;
       });

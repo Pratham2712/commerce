@@ -101,11 +101,11 @@ export const signupController = async (req, res, next) => {
         message: "incorrect username and password",
       });
     } else {
-      const storedPassword = user.password;
+      const storedPassword = user[0].password;
       const match = await bcrypt.compare(req.body?.password, storedPassword);
       if (match) {
         const token = {
-          _id: user._id,
+          _id: user[0]._id,
         };
         const jwtToken = await jwt.sign(token, "secret");
         return res
@@ -113,7 +113,12 @@ export const signupController = async (req, res, next) => {
           .cookie("USER_TOKEN", jwtToken, {
             expires: new Date(Date.now() + 1000 * 60 * 60),
           })
-          .json({ type: SUCCESS, message: "Login successful", errors: [] });
+          .json({
+            type: SUCCESS,
+            message: "Login successful",
+            errors: [],
+            data: user,
+          });
       } else {
         return res.status(400).json({
           type: FAILURE,
@@ -124,4 +129,11 @@ export const signupController = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+};
+
+export const logoutController = async (req, res, next) => {
+  return res.status(200).cookie("USER_TOKEN", "").json({
+    type: SUCCESS,
+    message: "Logout successfully",
+  });
 };
