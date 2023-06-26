@@ -1,4 +1,4 @@
-import React, {useState } from "react";
+import React, { useState } from "react";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import PasswordIcon from "@mui/icons-material/Password";
 import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
@@ -25,12 +25,11 @@ import * as yup from "yup";
 import { ErrorMessage } from "@hookform/error-message";
 import { useDispatch, useSelector } from "react-redux";
 import { SUCCESS } from "../constants/constants";
-import { clearErrorSlice } from "../redux/slices/UserInfoSlice";
+import { clearErrorSlice, signupThunk } from "../redux/slices/UserInfoSlice";
 
-
-const Signup = ({signup,setSignup}) => {
-    const [showPassword, setShowPassword] = useState(false);
-    const [successMsg, setSuccessMsg] = useState(false);
+const Signup = ({ signup, setSignup }) => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [successMsg, setSuccessMsg] = useState(false);
   const [state, setState] = useState({
     open: false,
     vertical: "top",
@@ -86,7 +85,11 @@ const Signup = ({signup,setSignup}) => {
       username: username,
       password: password,
     };
-    
+    dispatch(signupThunk(detail)).then((data) => {
+      if (data.payload.type === SUCCESS) {
+        setSuccessMsg(true);
+      }
+    });
   };
   const handleBlur = async (e) => {
     await trigger(e.target.name);
@@ -101,7 +104,7 @@ const Signup = ({signup,setSignup}) => {
   };
   return (
     <>
-      {/* <Snackbar
+      <Snackbar
         open={showError}
         anchorOrigin={{ vertical, horizontal }}
         autoHideDuration={3000}
@@ -120,17 +123,21 @@ const Signup = ({signup,setSignup}) => {
         open={successMsg}
         anchorOrigin={{ vertical, horizontal }}
         autoHideDuration={3000}
-        onClose={() => {setSuccessMsg(false)}}
+        onClose={() => {
+          setSuccessMsg(false);
+        }}
       >
         <Alert
           severity="success"
           variant="filled"
-          onClose={() => {setSuccessMsg(false)}}
+          onClose={() => {
+            setSuccessMsg(false);
+          }}
           sx={{ width: "100%" }}
         >
           Logged in successfully
         </Alert>
-      </Snackbar> */}
+      </Snackbar>
       {loading ? (
         <Skeleton variant="rounded" width={210} height={60} />
       ) : (
@@ -207,7 +214,6 @@ const Signup = ({signup,setSignup}) => {
                 )}
               />
             </Typography>
-            
           </DialogContent>
           <DialogActions>
             <Button
@@ -220,9 +226,8 @@ const Signup = ({signup,setSignup}) => {
           </DialogActions>
         </Dialog>
       )}
-    
     </>
-  )
-}
+  );
+};
 
-export default Signup
+export default Signup;

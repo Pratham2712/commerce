@@ -1,6 +1,11 @@
 import { FAILURE, SUCCESS } from "../constants/constants.js";
-import { loginService, checkUserService } from "../service/authService.js";
+import {
+  loginService,
+  checkUserService,
+  getUser,
+} from "../service/authService.js";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 
 export const checkUserController = async (req, res, next) => {
   try {
@@ -43,7 +48,9 @@ export const loginController = async (req, res, next) => {
       const jwtToken = await jwt.sign(token, "secret");
       return res
         .status(200)
-        .cookie("USER_TOKEN", jwtToken)
+        .cookie("USER_TOKEN", jwtToken, {
+          expires: new Date(Date.now() + 1000 * 60 * 60),
+        })
         .json({
           type: SUCCESS,
           message: "Logged in sucessfully",
@@ -57,6 +64,62 @@ export const loginController = async (req, res, next) => {
         errors: [],
         message: "Fail to login",
       });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const tokenLoginController = async (req, res, next) => {
+  try {
+    const user = await getUser(req.body?._id);
+    if (user) {
+      return res.status(200).json({
+        type: SUCCESS,
+        message: "Login successfull",
+        errors: [],
+        data: user,
+      });
+    } else {
+      return res.status(400).json({
+        type: FAILURE,
+        message: "Failed to login",
+        errors: [],
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const signupController = async (req, res, next) => {
+  try {
+    const user = await checkUserService(req.body?.username);
+    if (user.length < 1) {
+      return res.status(400).json({
+        type: FAILURE,
+        message: "incorrect username and password",
+      });
+    } else {
+      const storedPassword = user.password;
+      const match = await bcrypt.compare(req.body?.password, storedPassword);
+      if (match) {
+        const token = {
+          _id: user._id,
+        };
+        const jwtToken = await jwt.sign(token, "secret");
+        return res
+          .status(200)
+          .cookie("USER_TOKEN", jwtToken, {
+            expires: new Date(Date.now() + 1000 * 60 * 60),
+          })
+          .json({ type: SUCCESS, message: "Login successful", errors: [] });
+      } else {
+        return res.status(400).json({
+          type: FAILURE,
+          message: "incorrect username and password",
+        });
+      }
     }
   } catch (error) {
     next(error);

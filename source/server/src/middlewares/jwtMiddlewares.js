@@ -1,10 +1,12 @@
 import { FAILURE } from "../constants/constants.js";
+import { getUser } from "../service/authService.js";
+import jwt from "jsonwebtoken";
 
 export const verifyToken = async (req, res, next) => {
   try {
-    if (req.cookie["USER_TOKEN"]) {
+    if (req.cookies["USER_TOKEN"]) {
       const decryptedToken = await jwt.verify(
-        req.cookie["USER_TOKEN"],
+        req.cookies["USER_TOKEN"],
         process.env.JWT_SECRET
       );
       const user = await getUser(decryptedToken._id);

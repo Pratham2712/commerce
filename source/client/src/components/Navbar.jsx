@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { styled, alpha } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -16,7 +16,8 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { Button } from "@mui/material";
 
 import Login from "../pages/Login";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { checkUserLoginThunk } from "../redux/slices/UserInfoSlice";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -67,11 +68,16 @@ const Navbar = () => {
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState();
   const [loginOpen, setLoginOpen] = useState(false);
 
+  const dispatch = useDispatch();
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
-  const isLogin = useSelector((state) => state.rootReducer.UserInfoSlice.isLogin);
-  const userName = useSelector((state) => state.rootReducer.UserInfoSlice.data.userInfo.username);
+  const isLogin = useSelector(
+    (state) => state.rootReducer.UserInfoSlice.isLogin
+  );
+  const userName = useSelector(
+    (state) => state.rootReducer.UserInfoSlice.data.userInfo.username
+  );
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -111,7 +117,9 @@ const Navbar = () => {
       <MenuItem onClick={handleMenuClose}>Logout</MenuItem>
     </Menu>
   );
-
+  useEffect(() => {
+    dispatch(checkUserLoginThunk());
+  }, []);
   const mobileMenuId = "primary-search-account-menu-mobile";
   const renderMobileMenu = (
     <Menu
@@ -141,8 +149,7 @@ const Navbar = () => {
         <Button
           variant="outlined"
           sx={{ color: "black", borderColor: "black" }}
-          onClick={() => !isLogin ? setLoginOpen(!loginOpen):""}
-          
+          onClick={() => (!isLogin ? setLoginOpen(!loginOpen) : "")}
         >
           {isLogin ? userName : "Login/Signup"}
         </Button>
@@ -165,82 +172,81 @@ const Navbar = () => {
 
   return (
     <>
-    
-    <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="fixed">
-        <StyledAppbar>
-          <Typography
-            variant="h6"
-            noWrap
-            component="div"
-            sx={{ display: { xs: "none", sm: "block" } }}
-          >
-            Cobra
-          </Typography>
-          <Box sx={{ flexGrow: 0.13 }} />
-          <Search>
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="Search…"
-              inputProps={{ "aria-label": "search" }}
-            />
-          </Search>
-          <Box sx={{ flexGrow: 0.13 }} />
-          <Box sx={{ display: { xs: "none", md: "flex" } }}>
-            <Button
-              variant="outlined"
-              sx={{ color: "white", borderColor: "white" }}
-              onClick={() => !isLogin ? setLoginOpen(!loginOpen):""}
+      <Box sx={{ flexGrow: 1 }}>
+        <AppBar position="fixed">
+          <StyledAppbar>
+            <Typography
+              variant="h6"
+              noWrap
+              component="div"
+              sx={{ display: { xs: "none", sm: "block" } }}
             >
-              {isLogin ? userName : "Login/Signup"}
-            </Button>
-          </Box>
-          <Box sx={{ flexGrow: 0.13 }} />
-          <Box sx={{ display: { xs: "none", md: "flex" } }}>
-            <IconButton
-              size="large"
-              aria-label="show 4 new mails"
-              color="inherit"
-            >
-              <Badge badgeContent={4} color="error">
-                <ShoppingCartIcon />
-              </Badge>
-            </IconButton>
-          </Box>
-          <Box sx={{ flexGrow: 0.13 }} />
-          <Box sx={{ display: { xs: "none", md: "flex" } }}>
-            <IconButton
-              size="large"
-              edge="end"
-              aria-label="account of current user"
-              aria-controls={menuId}
-              aria-haspopup="true"
-              onClick={handleProfileMenuOpen}
-              color="inherit"
-            >
-              <AccountCircle />
-            </IconButton>
-          </Box>
-          <Box sx={{ display: { xs: "flex", md: "none" } }}>
-            <IconButton
-              size="large"
-              aria-label="show more"
-              aria-controls={mobileMenuId}
-              aria-haspopup="true"
-              onClick={handleMobileMenuOpen}
-              color="inherit"
-            >
-              <MoreIcon />
-            </IconButton>
-          </Box>
-          {renderMobileMenu}
-          {renderMenu}
-        </StyledAppbar>
-      </AppBar>
-      <Login loginOpen={loginOpen} setLoginOpen={setLoginOpen} />
-    </Box>
+              Cobra
+            </Typography>
+            <Box sx={{ flexGrow: 0.13 }} />
+            <Search>
+              <SearchIconWrapper>
+                <SearchIcon />
+              </SearchIconWrapper>
+              <StyledInputBase
+                placeholder="Search…"
+                inputProps={{ "aria-label": "search" }}
+              />
+            </Search>
+            <Box sx={{ flexGrow: 0.13 }} />
+            <Box sx={{ display: { xs: "none", md: "flex" } }}>
+              <Button
+                variant="outlined"
+                sx={{ color: "white", borderColor: "white" }}
+                onClick={() => (!isLogin ? setLoginOpen(!loginOpen) : "")}
+              >
+                {isLogin ? userName : "Login/Signup"}
+              </Button>
+            </Box>
+            <Box sx={{ flexGrow: 0.13 }} />
+            <Box sx={{ display: { xs: "none", md: "flex" } }}>
+              <IconButton
+                size="large"
+                aria-label="show 4 new mails"
+                color="inherit"
+              >
+                <Badge badgeContent={4} color="error">
+                  <ShoppingCartIcon />
+                </Badge>
+              </IconButton>
+            </Box>
+            <Box sx={{ flexGrow: 0.13 }} />
+            <Box sx={{ display: { xs: "none", md: "flex" } }}>
+              <IconButton
+                size="large"
+                edge="end"
+                aria-label="account of current user"
+                aria-controls={menuId}
+                aria-haspopup="true"
+                onClick={handleProfileMenuOpen}
+                color="inherit"
+              >
+                <AccountCircle />
+              </IconButton>
+            </Box>
+            <Box sx={{ display: { xs: "flex", md: "none" } }}>
+              <IconButton
+                size="large"
+                aria-label="show more"
+                aria-controls={mobileMenuId}
+                aria-haspopup="true"
+                onClick={handleMobileMenuOpen}
+                color="inherit"
+              >
+                <MoreIcon />
+              </IconButton>
+            </Box>
+            {renderMobileMenu}
+            {renderMenu}
+          </StyledAppbar>
+        </AppBar>
+        <Login loginOpen={loginOpen} setLoginOpen={setLoginOpen} />
+      </Box>
     </>
   );
 };

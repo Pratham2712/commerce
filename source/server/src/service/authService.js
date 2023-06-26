@@ -17,3 +17,8 @@ export const loginService = async (data) => {
   });
   return res;
 };
+
+export const getUser = async (data) => {
+  const res = await userModel.findById(data);
+  return res;
+};
