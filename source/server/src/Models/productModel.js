@@ -33,6 +33,9 @@ const productSchema = new mongoose.Schema({
     required: true,
     min: [0, "Cannot be negative"],
   },
+  brand: {
+    type: String,
+  },
   category: {
     type: String,
     required: true,
