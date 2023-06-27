@@ -179,6 +179,7 @@ const userInfoSlice = createSlice({
             state.successData.message = payload.data.message;
             state.loading = false;
             state.isLogin = true;
+            state.updateDone = !state.updateDone;
             state.status.checkUserLoginThunk = FULFILLED;
             break;
           default:
