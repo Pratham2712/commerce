@@ -5,7 +5,7 @@ const categorySchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  gender: {
+  type: {
     type: String,
     enum: ["MALE", "FEMALE", "KIDS", "NOT SPECIFIED"],
     default: "NOT SPECIFIED",
