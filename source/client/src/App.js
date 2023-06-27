@@ -1,14 +1,14 @@
 import "./App.css";
 import { BrowserRouter } from "react-router-dom";
-import Navbar from "./components/Navbar";
 import Routess from "./Routess";
+import AdminRoute from "./AdminRoute";
 
 function App() {
   return (
     <>
       <BrowserRouter>
-        <Navbar />
         <Routess />
+        <AdminRoute />
       </BrowserRouter>
     </>
   );
