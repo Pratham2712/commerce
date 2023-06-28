@@ -104,7 +104,6 @@ const adminSlice = createSlice({
           case SUCCESS:
             state.data.allCategory = payload.data;
             state.loading = false;
-            state.updateDone = !state.updateDone;
             state.status.getCategoryThunk = FULFILLED;
             break;
           default:

@@ -23,11 +23,16 @@ import * as yup from "yup";
 import { ErrorMessage } from "@hookform/error-message";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { createSearchParams, useSearchParams } from "react-router-dom";
 
 const AdminCategoryTable = () => {
-  const [openDialog, setOpenDialog] = useState(false);
+  const [openDialog, setOpenDialog] = useState({ key: -1, value: false });
   const [id, setId] = useState("");
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const dispatch = useDispatch();
+
+  console.log(openDialog);
 
   //schema
   const schema = yup.object().shape({
@@ -69,18 +74,23 @@ const AdminCategoryTable = () => {
   const handleBlur = async (e) => {
     await trigger(e.target.name);
   };
-  const addSub = ({ subcategory }) => {
-    console.log(subcategory);
+  const addSub = (id) => {
+    console.log(id);
+  };
+  const setParam = (id) => {
+    const params = Object.fromEntries(searchParams);
+    params["id"] = id;
+    setSearchParams(createSearchParams(params));
   };
   //useEffect
   useEffect(() => {
     dispatch(getCategoryThunk());
   }, []);
 
-  //   useEffect(() => {
-  //     dispatch(getCategoryThunk());
-  //   }, [updateDone]);
-  console.log("called");
+  useEffect(() => {
+    dispatch(getCategoryThunk());
+  }, [updateDone]);
+
   return (
     <>
       <TableContainer
@@ -109,7 +119,7 @@ const AdminCategoryTable = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {categoryData?.map((row) => (
+            {categoryData?.map((row, idx) => (
               <TableRow
                 key={row?._id}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -125,8 +135,7 @@ const AdminCategoryTable = () => {
                     variant="outlined"
                     sx={{ color: "primary" }}
                     onClick={() => {
-                      setOpenDialog(!openDialog);
-                      setId(row?._id);
+                      setOpenDialog({ key: idx, value: true });
                     }}
                   >
                     Add Sub
@@ -139,48 +148,48 @@ const AdminCategoryTable = () => {
                 </TableCell>
               </TableRow>
             ))}
+            <Dialog
+              open={openDialog.value}
+              onClose={() => {
+                setOpenDialog({ key: -1, value: false });
+              }}
+            >
+              <DialogTitle>Add subcategory</DialogTitle>
+              <DialogContent sx={{ textAlign: "center" }}>
+                <DialogContentText></DialogContentText>
+                <TextField
+                  autoFocus
+                  margin="dense"
+                  id="subcategory"
+                  label="Enter subcategory"
+                  name="subcategory"
+                  type="text"
+                  variant="standard"
+                  {...register("subcategory")}
+                  onBlur={handleBlur}
+                />
+                <Typography sx={{ height: "1.5rem", fontSize: "0.8rem" }}>
+                  <ErrorMessage
+                    errors={errors}
+                    name="subcategory"
+                    render={({ message }) => (
+                      <span style={{ color: "maroon" }}>{message}</span>
+                    )}
+                  />
+                </Typography>
+                <Button
+                  variant="contained"
+                  sx={{ marginTop: "1rem" }}
+                  type="submit"
+                  onClick={() => addSub(categoryData[openDialog.key]?._id)}
+                >
+                  Add
+                </Button>
+              </DialogContent>
+            </Dialog>
           </TableBody>
         </Table>
       </TableContainer>
-      <Dialog
-        open={openDialog}
-        onClose={() => {
-          setOpenDialog(false);
-        }}
-      >
-        <DialogTitle>Add subcategory</DialogTitle>
-        <DialogContent sx={{ textAlign: "center" }}>
-          <DialogContentText></DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="subcategory"
-            label="Enter subcategory"
-            name="subcategory"
-            type="text"
-            variant="standard"
-            {...register("subcategory")}
-            onBlur={handleBlur}
-          />
-          <Typography sx={{ height: "1.5rem", fontSize: "0.8rem" }}>
-            <ErrorMessage
-              errors={errors}
-              name="subcategory"
-              render={({ message }) => (
-                <span style={{ color: "maroon" }}>{message}</span>
-              )}
-            />
-          </Typography>
-          <Button
-            variant="contained"
-            sx={{ marginTop: "1rem" }}
-            type="submit"
-            onClick={handleSubmit(addSub)}
-          >
-            Add
-          </Button>
-        </DialogContent>
-      </Dialog>
     </>
   );
 };
