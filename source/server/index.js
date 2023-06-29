@@ -34,7 +34,7 @@ app.get("/", (req, res) => {
 });
 // Routes
 app.use("/auth", authRouter);
-app.use("/home", verifyToken, homeRouter);
+app.use("/home", homeRouter);
 app.use("/admin", adminRouter);
 app.listen(8000, () => {
   console.log("Listening on port 8000");

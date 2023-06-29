@@ -23,7 +23,6 @@ import {
   TextField,
   Typography,
   Chip,
-  Box,
 } from "@mui/material";
 import styled from "@emotion/styled";
 import * as yup from "yup";
