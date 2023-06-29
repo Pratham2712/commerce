@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getCategoryThunk } from "../../redux/slices/adminSlice";
+import {
+  addSubThunk,
+  deleteCatThunk,
+  deleteSubThunk,
+  getCategoryThunk,
+} from "../../redux/slices/adminSlice";
 import {
   Button,
   Paper,
@@ -17,6 +22,8 @@ import {
   DialogContentText,
   TextField,
   Typography,
+  Chip,
+  Box,
 } from "@mui/material";
 import styled from "@emotion/styled";
 import * as yup from "yup";
@@ -24,6 +31,7 @@ import { ErrorMessage } from "@hookform/error-message";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { createSearchParams, useSearchParams } from "react-router-dom";
+import { SUCCESS } from "../../constants/constants";
 
 const AdminCategoryTable = () => {
   const [openDialog, setOpenDialog] = useState({ key: -1, value: false });
@@ -31,8 +39,6 @@ const AdminCategoryTable = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const dispatch = useDispatch();
-
-  console.log(openDialog);
 
   //schema
   const schema = yup.object().shape({
@@ -75,13 +81,36 @@ const AdminCategoryTable = () => {
     await trigger(e.target.name);
   };
   const addSub = (id) => {
-    console.log(id);
+    const subcategory = watch("subcategory");
+    const data = {
+      subId: id,
+      subcategory: subcategory,
+    };
+    dispatch(addSubThunk(data)).then((data) => {
+      if (data.payload.type === SUCCESS) {
+        setOpenDialog(false);
+        setValue("subcategory", "");
+      }
+    });
   };
-  const setParam = (id) => {
-    const params = Object.fromEntries(searchParams);
-    params["id"] = id;
-    setSearchParams(createSearchParams(params));
+  const handleDeleteSub = (row, ele) => {
+    const data = {
+      subId: row?._id,
+      subCategory: ele,
+    };
+    dispatch(deleteSubThunk(data));
   };
+  const deleteCategory = (id) => {
+    const data = {
+      catId: id,
+    };
+    dispatch(deleteCatThunk(data));
+  };
+  // const setParam = (id) => {
+  //   const params = Object.fromEntries(searchParams);
+  //   params["id"] = id;
+  //   setSearchParams(createSearchParams(params));
+  // };
   //useEffect
   useEffect(() => {
     dispatch(getCategoryThunk());
@@ -96,10 +125,10 @@ const AdminCategoryTable = () => {
       <TableContainer
         component={Paper}
         sx={{
-          marginTop: "10rem",
+          marginTop: "3rem",
           maxWidth: 1000,
           marginLeft: "0rem",
-          maxHeight: "40rem",
+          //maxHeight: "40rem",
         }}
       >
         <Table
@@ -122,14 +151,43 @@ const AdminCategoryTable = () => {
             {categoryData?.map((row, idx) => (
               <TableRow
                 key={row?._id}
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                sx={{
+                  "&:last-child td, &:last-child th": { border: 0 },
+                  height: "70px",
+                }}
               >
                 <TableCell component="th" scope="row">
                   {row?.category}
                 </TableCell>
                 <TableCell align="center">{row?.type}</TableCell>
 
-                <TableCell align="center">{row?.subcategory}</TableCell>
+                <TableCell
+                  align="center"
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    //maxHeight: 50,
+                    height: "inherit",
+                    overflowY: "scroll",
+                    alignItems: "center",
+                  }}
+                >
+                  {row?.subCategory.map((ele) => {
+                    return (
+                      <Chip
+                        label={ele}
+                        sx={{
+                          marginTop: "0.1rem",
+                          padding: "1rem 0.5rem",
+                          display: "flex",
+                          justifyContent: "space-between",
+                          //maxWidth: "10rem",
+                        }}
+                        onDelete={() => handleDeleteSub(row, ele)}
+                      />
+                    );
+                  })}
+                </TableCell>
                 <TableCell align="center">
                   <Button
                     variant="outlined"
@@ -142,7 +200,11 @@ const AdminCategoryTable = () => {
                   </Button>
                 </TableCell>
                 <TableCell align="center">
-                  <Button variant="outlined" sx={{ color: "primary" }}>
+                  <Button
+                    variant="outlined"
+                    sx={{ color: "primary" }}
+                    onClick={() => deleteCategory(row?._id)}
+                  >
                     Delete
                   </Button>
                 </TableCell>
@@ -152,6 +214,7 @@ const AdminCategoryTable = () => {
               open={openDialog.value}
               onClose={() => {
                 setOpenDialog({ key: -1, value: false });
+                setValue("subcategory", "");
               }}
             >
               <DialogTitle>Add subcategory</DialogTitle>
