@@ -1,4 +1,5 @@
-import { getTypeCatService } from "../service/homeService";
+import { getTypeCatService } from "../service/homeService.js";
+import { FAILURE, SUCCESS } from "../constants/constants.js";
 
 export const getTypeCatController = async (req, res, next) => {
   try {

@@ -13,7 +13,7 @@ import AddBoxIcon from "@mui/icons-material/AddBox";
 import ViewListIcon from "@mui/icons-material/ViewList";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import { NavLink } from "react-router-dom";
-import { Admin_Category } from "../../constants/links";
+import { Admin_AddProduct, Admin_Category } from "../../constants/links";
 
 const AdminNavbar = () => {
   const [open, setOpen] = useState(true);
@@ -82,14 +82,27 @@ const AdminNavbar = () => {
               </ListItem>
             )}
           </NavLink>
-          <ListItem disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                <AddBoxIcon />
-              </ListItemIcon>
-              <ListItemText primary={"Add products"} />
-            </ListItemButton>
-          </ListItem>
+          <NavLink
+            to={Admin_AddProduct}
+            style={{ width: "100%", textDecoration: "none", color: "inherit" }}
+          >
+            {({ isActive, isPending }) => (
+              <ListItem
+                disablePadding
+                sx={{
+                  background: isActive ? "#ededed" : "",
+                }}
+              >
+                <ListItemButton>
+                  <ListItemIcon>
+                    <AddBoxIcon />
+                  </ListItemIcon>
+                  <ListItemText primary={"Add products"} />
+                </ListItemButton>
+              </ListItem>
+            )}
+          </NavLink>
+
           <ListItem disablePadding>
             <ListItemButton>
               <ListItemIcon>

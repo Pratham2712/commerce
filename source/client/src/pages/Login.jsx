@@ -1,4 +1,4 @@
-import React, {useState } from "react";
+import React, { useState } from "react";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import PasswordIcon from "@mui/icons-material/Password";
 import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
@@ -36,7 +36,7 @@ import Signup from "./Signup";
 
 const Login = ({ loginOpen, setLoginOpen }) => {
   const [showPassword, setShowPassword] = useState(false);
-  const [signup,setSignup] = useState(false);
+  const [signup, setSignup] = useState(false);
 
   const [successMsg, setSuccessMsg] = useState(false);
   const [state, setState] = useState({
@@ -53,9 +53,9 @@ const Login = ({ loginOpen, setLoginOpen }) => {
     (state) => state.rootReducer.UserInfoSlice.data.loading
   );
 
-  const isUsername = useSelector(
-    (state) => state.rootReducer.UserInfoSlice.data.userExist
-  );
+  // const isUsername = useSelector(
+  //   (state) => state.rootReducer.UserInfoSlice.data.userExist
+  // );
   const showError = useSelector(
     (state) => state.rootReducer.UserInfoSlice.isError
   );
@@ -118,10 +118,10 @@ const Login = ({ loginOpen, setLoginOpen }) => {
     dispatch(checkUsernameThunk({ data: username.trim() })).then((data) => {
       if (data.payload.data === false) {
         dispatch(loginThunk(detail)).then((data) => {
-          if(data.payload.type === SUCCESS){
+          if (data.payload.type === SUCCESS) {
             setSuccessMsg(true);
           }
-        })
+        });
         setLoginOpen(false);
       } else {
         setError("username", {
@@ -142,7 +142,7 @@ const Login = ({ loginOpen, setLoginOpen }) => {
     setValue(name, event.target.value); // Update the value of the username field
     trigger(name); // Trigger validation when the username value changes
   };
- 
+
   return (
     <>
       <Snackbar
@@ -164,12 +164,16 @@ const Login = ({ loginOpen, setLoginOpen }) => {
         open={successMsg}
         anchorOrigin={{ vertical, horizontal }}
         autoHideDuration={3000}
-        onClose={() => {setSuccessMsg(false)}}
+        onClose={() => {
+          setSuccessMsg(false);
+        }}
       >
         <Alert
           severity="success"
           variant="filled"
-          onClose={() => {setSuccessMsg(false)}}
+          onClose={() => {
+            setSuccessMsg(false);
+          }}
           sx={{ width: "100%" }}
         >
           Logged in successfully
@@ -308,8 +312,20 @@ const Login = ({ loginOpen, setLoginOpen }) => {
               />
             </Typography>
           </DialogContent>
-          <DialogActions sx={{display:"flex",justifyContent:"space-between"}}>
-            <Link underline="hover" sx={{paddingLeft:"1rem",cursor:"pointer"}} onClick={() => {setSignup(true);setLoginOpen(false)}}> Already have account? Signup</Link>
+          <DialogActions
+            sx={{ display: "flex", justifyContent: "space-between" }}
+          >
+            <Link
+              underline="hover"
+              sx={{ paddingLeft: "1rem", cursor: "pointer" }}
+              onClick={() => {
+                setSignup(true);
+                setLoginOpen(false);
+              }}
+            >
+              {" "}
+              Already have account? Signup
+            </Link>
             <Button
               variant="outlined"
               type="submit"
@@ -326,7 +342,7 @@ const Login = ({ loginOpen, setLoginOpen }) => {
           </DialogActions>
         </Dialog>
       )}
-      <Signup signup={signup} setSignup={setSignup}/>
+      <Signup signup={signup} setSignup={setSignup} />
     </>
   );
 };

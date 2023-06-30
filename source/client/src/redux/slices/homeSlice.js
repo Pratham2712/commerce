@@ -2,7 +2,6 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {
   BASE_URL,
   SUCCESS,
-  FAILURE,
   ERROR,
   IDLE,
   FULFILLED,
@@ -14,7 +13,6 @@ axios.defaults.withCredentials = true;
 export const getTypeCatThunk = createAsyncThunk(
   "/home/getTypeCat",
   async (data) => {
-    console.log("slice", data);
     try {
       const res = await axios.post(`${BASE_URL}/home/getTypeCat`, data);
       return res.data;
