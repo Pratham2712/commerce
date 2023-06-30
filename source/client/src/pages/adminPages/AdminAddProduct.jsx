@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 
 import FormControl from "@mui/material/FormControl";
@@ -25,6 +25,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   addCategoryThunk,
   clearErrorSlice,
+  getCatbyType,
 } from "../../redux/slices/adminSlice";
 import { SUCCESS } from "../../constants/constants";
 import styled from "@emotion/styled";
@@ -33,12 +34,8 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 const AdminAddProduct = () => {
   const [successMsg, setSuccessMsg] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  const [anchorSub, setAnchorSub] = useState(null);
+  const [subData, setSubData] = useState([]);
   const [state, setState] = useState({
     open: false,
     vertical: "top",
@@ -61,7 +58,9 @@ const AdminAddProduct = () => {
 
   //schema
   const schema = yup.object().shape({
-    title: yup.string().required("Category name is required"),
+    title: yup.string().required("title is required"),
+    type: yup.string().required("type name is required"),
+    category: yup.string().required("Category name is required"),
   });
   const {
     register,
@@ -76,9 +75,33 @@ const AdminAddProduct = () => {
     defaultValues: {
       title: "",
       type: "MALE",
+      category: "",
+      subcategory: "",
+      color: "",
+      brand: "",
     },
   });
+  const category = watch("category");
+  const subcategory = watch("subcategory");
+  const color = watch("color");
+  console.log(color);
+  //useSelector
+  const typeData = useSelector(
+    (state) => state.rootReducer.adminSlice.data.categoryData
+  );
   //Function
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleSubClick = (event) => {
+    setAnchorSub(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  const handleSubClose = () => {
+    setAnchorSub(null);
+  };
   const clearError = () => {
     dispatch(clearErrorSlice());
   };
@@ -96,10 +119,40 @@ const AdminAddProduct = () => {
   const handleBlur = async (e) => {
     await trigger(e.target.name);
   };
-  const handleUsernameChange = (event, name) => {
+  const handleChange = (event, name) => {
     setValue(name, event.target.value); // Update the value of the username field
     trigger(name); // Trigger validation when the username value changes
   };
+  const handleCatChange = (event, name) => {
+    setValue(name, event);
+    trigger(name);
+    setAnchorEl(null);
+  };
+  const handleSubChange = (event, name) => {
+    setValue(name, event);
+    trigger(name);
+    setAnchorSub(null);
+  };
+
+  //useEffect
+  const type = watch("type");
+  useEffect(() => {
+    const data = {
+      type: type,
+    };
+    dispatch(getCatbyType(data));
+  }, []);
+  useEffect(() => {
+    const data = {
+      type: type,
+    };
+    dispatch(getCatbyType(data));
+    setValue("category", "");
+    setValue("subcategory", "");
+  }, [type]);
+  useEffect(() => {
+    setSubData(typeData?.data?.filter((ele) => ele.category === category));
+  }, [category]);
 
   return (
     <>
@@ -139,8 +192,9 @@ const AdminAddProduct = () => {
       </Snackbar>
       <Box
         sx={{
-          marginLeft: "0rem",
+          marginLeft: "25rem",
           paddingTop: "3rem",
+          width: "100%",
         }}
       >
         <div
@@ -148,7 +202,8 @@ const AdminAddProduct = () => {
             padding: "0rem 0rem",
             display: "flex",
             alignItems: "center",
-            justifyContent: "space-evenly",
+            justifyContent: "space-between",
+            width: 850,
           }}
         >
           <Box>
@@ -159,8 +214,9 @@ const AdminAddProduct = () => {
               name="title"
               type="text"
               variant="standard"
-              {...register("category")}
+              {...register("title")}
               onBlur={handleBlur}
+              fullWidth
             ></TextField>
             <Typography sx={{ height: "1.5rem", fontSize: "0.8rem" }}>
               <ErrorMessage
@@ -181,7 +237,7 @@ const AdminAddProduct = () => {
               defaultValue="MALE"
               {...register("type")}
               onBlur={handleBlur}
-              onChange={(e) => handleUsernameChange(e, "type")}
+              onChange={(e) => handleChange(e, "type")}
             >
               <FormControlLabel
                 name="type"
@@ -214,7 +270,7 @@ const AdminAddProduct = () => {
               onClick={handleClick}
               endIcon={<KeyboardArrowDownIcon />}
             >
-              Category
+              {category ? category : "category"}
             </Button>
             <Menu
               id="demo-customized-menu"
@@ -225,56 +281,87 @@ const AdminAddProduct = () => {
               open={anchorEl}
               onClose={handleClose}
             >
-              <MenuItem onClick={handleClose} disableRipple>
-                Edit
-              </MenuItem>
-              <MenuItem onClick={handleClose} disableRipple>
-                Duplicate
-              </MenuItem>
-              <MenuItem onClick={handleClose} disableRipple>
-                Archive
-              </MenuItem>
-              <MenuItem onClick={handleClose} disableRipple>
-                More
-              </MenuItem>
+              {typeData?.data?.map((data) => {
+                return (
+                  <MenuItem
+                    {...register("category")}
+                    onClick={() => handleCatChange(data?.category, "category")}
+                    disableRipple
+                  >
+                    {data?.category}
+                  </MenuItem>
+                );
+              })}
             </Menu>
           </div>
           <div>
             <Button
               id="demo-customized-button"
-              aria-controls={anchorEl ? "demo-customized-menu" : undefined}
+              aria-controls={anchorSub ? "demo-customized-menu" : undefined}
               aria-haspopup="true"
-              aria-expanded={anchorEl ? "true" : undefined}
+              aria-expanded={anchorSub ? "true" : undefined}
               variant="outlined"
               disableElevation
-              onClick={handleClick}
+              onClick={handleSubClick}
               endIcon={<KeyboardArrowDownIcon />}
             >
-              Subcategory
+              {subcategory ? subcategory : "subcategory"}
             </Button>
             <Menu
               id="demo-customized-menu"
               MenuListProps={{
                 "aria-labelledby": "demo-customized-button",
               }}
-              anchorEl={anchorEl}
-              open={anchorEl}
-              onClose={handleClose}
+              anchorEl={anchorSub}
+              open={anchorSub}
+              onClose={handleSubClose}
             >
-              <MenuItem onClick={handleClose} disableRipple>
-                Edit
-              </MenuItem>
-              <MenuItem onClick={handleClose} disableRipple>
-                Duplicate
-              </MenuItem>
-              <MenuItem onClick={handleClose} disableRipple>
-                Archive
-              </MenuItem>
-              <MenuItem onClick={handleClose} disableRipple>
-                More
-              </MenuItem>
+              {subData?.[0]?.subCategory?.map((ele) => {
+                return (
+                  <MenuItem
+                    {...register("subcategory")}
+                    onClick={() => handleSubChange(ele, "subcategory")}
+                    disableRipple
+                  >
+                    {ele}
+                  </MenuItem>
+                );
+              })}
             </Menu>
           </div>
+        </div>
+        <div style={{ marginTop: "3rem" }}>
+          <Box>
+            <label
+              htmlFor="color"
+              style={{ fontSize: "1.3rem", fontWeight: "lighter" }}
+            >
+              Select color :{" "}
+            </label>
+            <input {...register("color")} id="color" type="color" />
+          </Box>
+          <Box></Box>
+          <Box>
+            <TextField
+              margin="dense"
+              id="brand"
+              label="Brand"
+              name="brand"
+              type="text"
+              variant="standard"
+              {...register("brand")}
+              onBlur={handleBlur}
+            ></TextField>
+            <Typography sx={{ height: "1.5rem", fontSize: "0.8rem" }}>
+              <ErrorMessage
+                errors={errors}
+                name="brand"
+                render={({ message }) => (
+                  <span style={{ color: "maroon" }}>{message}</span>
+                )}
+              />
+            </Typography>
+          </Box>
         </div>
       </Box>
     </>

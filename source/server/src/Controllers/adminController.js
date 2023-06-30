@@ -4,6 +4,7 @@ import {
   addSubService,
   deleteCatService,
   deleteSubService,
+  getCatbyTypeService,
   getCategoryService,
 } from "../service/adminService.js";
 
@@ -103,6 +104,28 @@ export const deleteCatController = async (req, res, next) => {
   try {
     const result = await deleteCatService({
       catId: req.body.catId,
+    });
+    if (result) {
+      return res.status(200).json({
+        type: SUCCESS,
+        message: "Delete sucessfully",
+        data: result,
+      });
+    } else {
+      return res.status(400).json({
+        type: FAILURE,
+        message: "Failed to delete",
+        errors: [],
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+export const getCatbyTypeController = async (req, res, next) => {
+  try {
+    const result = await getCatbyTypeService({
+      type: req.body?.type,
     });
     if (result) {
       return res.status(200).json({

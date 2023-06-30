@@ -69,6 +69,17 @@ export const deleteCatThunk = createAsyncThunk(
     }
   }
 );
+export const getCatbyType = createAsyncThunk(
+  "/admin/getcategory",
+  async (data) => {
+    try {
+      const res = axios.post(`${BASE_URL}/admin/getcategory`, data);
+      return res;
+    } catch (error) {
+      return error.response.data;
+    }
+  }
+);
 
 const initialState = {
   loading: false,
@@ -85,6 +96,7 @@ const initialState = {
   data: {
     addedCategory: {},
     allCategory: [],
+    categoryData: [],
   },
   status: {
     addCategoryThunk: IDLE,
@@ -92,6 +104,7 @@ const initialState = {
     addSubThunk: IDLE,
     deleteSubThunk: IDLE,
     deleteCatThunk: IDLE,
+    getCatbyType: IDLE,
   },
 };
 
@@ -234,6 +247,32 @@ const adminSlice = createSlice({
       })
       .addCase(deleteCatThunk.rejected, (state, action) => {
         state.status.deleteCatThunk = ERROR;
+        state.loading = false;
+        state.errorData.message = action.error.message;
+      })
+      //deleteCatThunk==============================================================================================================================
+      .addCase(getCatbyType.pending, (state, { payload }) => {
+        state.loading = true;
+      })
+      .addCase(getCatbyType.fulfilled, (state, { payload }) => {
+        switch (payload.data.type) {
+          case SUCCESS:
+            state.loading = false;
+            state.data.categoryData = payload.data;
+            state.status.getCatbyType = FULFILLED;
+            break;
+          default:
+            state.loading = false;
+            state.errorData = {
+              message: payload.message,
+              type: payload.type,
+              errors: payload.errors,
+            };
+            break;
+        }
+      })
+      .addCase(getCatbyType.rejected, (state, action) => {
+        state.status.getCatbyType = ERROR;
         state.loading = false;
         state.errorData.message = action.error.message;
       });

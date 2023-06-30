@@ -32,3 +32,11 @@ export const deleteCatService = async ({ catId }) => {
   const res = await categoryModel.findByIdAndDelete(catId);
   return res;
 };
+
+export const getCatbyTypeService = async ({ type }) => {
+  const res = await categoryModel.find(
+    { type: type },
+    { category: 1, subCategory: 1 }
+  );
+  return res;
+};

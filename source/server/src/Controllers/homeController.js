@@ -3,7 +3,6 @@ import { FAILURE, SUCCESS } from "../constants/constants.js";
 
 export const getTypeCatController = async (req, res, next) => {
   try {
-    console.log(req.body);
     const result = await getTypeCatService({ type: req.body?.type });
     if (result) {
       return res.status(200).json({
