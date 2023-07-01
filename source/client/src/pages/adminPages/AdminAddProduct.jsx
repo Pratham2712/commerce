@@ -6,7 +6,6 @@ import TextField from "@mui/material/TextField";
 import {
   Alert,
   Button,
-  Divider,
   FormControlLabel,
   FormLabel,
   Menu,
@@ -15,7 +14,7 @@ import {
   RadioGroup,
   Snackbar,
   Typography,
-  alpha,
+  hexToRgb,
 } from "@mui/material";
 import * as yup from "yup";
 import { ErrorMessage } from "@hookform/error-message";
@@ -24,18 +23,29 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addCategoryThunk,
+  addProductThunk,
   clearErrorSlice,
+  clearSuccessMsg,
   getCatbyType,
 } from "../../redux/slices/adminSlice";
 import { SUCCESS } from "../../constants/constants";
-import styled from "@emotion/styled";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
+import HighlightOffRoundedIcon from "@mui/icons-material/HighlightOffRounded";
+import styled from "@emotion/styled";
 
+const StyledDiv = styled("div")(({ theme }) => ({
+  marginTop: "3rem",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  width: 850,
+}));
 const AdminAddProduct = () => {
-  const [successMsg, setSuccessMsg] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [anchorSub, setAnchorSub] = useState(null);
   const [subData, setSubData] = useState([]);
+  const [imageurl, setImageurl] = useState([]);
   const [state, setState] = useState({
     open: false,
     vertical: "top",
@@ -52,6 +62,10 @@ const AdminAddProduct = () => {
     (state) => state.rootReducer.adminSlice.errorData.message
   );
 
+  const isSuccess = useSelector(
+    (state) => state.rootReducer.adminSlice.successData.isSuccess
+  );
+
   const message = useSelector(
     (state) => state.rootReducer.adminSlice.successData.message
   );
@@ -59,8 +73,17 @@ const AdminAddProduct = () => {
   //schema
   const schema = yup.object().shape({
     title: yup.string().required("title is required"),
-    type: yup.string().required("type name is required"),
-    category: yup.string().required("Category name is required"),
+    type: yup.string().required("type is required"),
+    category: yup.string().required("Category  is required"),
+    subcategory: yup.string().required("Subcategory is required"),
+    price: yup
+      .number()
+      .min(0, "Price must be at least zero")
+      .typeError("Price is required")
+      .required("Price is required"),
+    desc: yup.string().required("description is required"),
+    size: yup.string().required("sizes are required"),
+    imageurl: yup.string(),
   });
   const {
     register,
@@ -70,6 +93,7 @@ const AdminAddProduct = () => {
     watch,
     setValue,
     setError,
+    reset,
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -79,12 +103,14 @@ const AdminAddProduct = () => {
       subcategory: "",
       color: "",
       brand: "",
+      price: "",
+      desc: "",
+      imageurl: "",
+      size: "",
     },
   });
   const category = watch("category");
   const subcategory = watch("subcategory");
-  const color = watch("color");
-  console.log(color);
   //useSelector
   const typeData = useSelector(
     (state) => state.rootReducer.adminSlice.data.categoryData
@@ -105,16 +131,8 @@ const AdminAddProduct = () => {
   const clearError = () => {
     dispatch(clearErrorSlice());
   };
-  const onSubmit = ({ category, type }) => {
-    const data = {
-      category: category,
-      type: type,
-    };
-    dispatch(addCategoryThunk(data)).then((data) => {
-      if (data.payload.type === SUCCESS) {
-        setSuccessMsg(true);
-      }
-    });
+  const clearSuccess = () => {
+    dispatch(clearSuccessMsg());
   };
   const handleBlur = async (e) => {
     await trigger(e.target.name);
@@ -134,6 +152,68 @@ const AdminAddProduct = () => {
     setAnchorSub(null);
   };
 
+  const addImage = () => {
+    const img = watch("imageurl").toString();
+    if (imageurl.length <= 4 && img) {
+      setImageurl([...imageurl, img]);
+    } else {
+      setError("imageurl", {
+        type: "manual",
+        message: "minimum 1 and maximum 5 images are allowed",
+      });
+    }
+    setValue("imageurl", "");
+  };
+
+  const deleteImg = (img) => {
+    const image = img.toString();
+    const index = imageurl.indexOf(image);
+    if (index > -1) {
+      const arr = [...imageurl];
+      arr.splice(index, 1);
+      setImageurl(arr);
+    }
+  };
+
+  const onSubmit = ({
+    brand,
+    title,
+    category,
+    subcategory,
+    type,
+    color,
+    price,
+    desc,
+    size,
+  }) => {
+    const data = {
+      title: title,
+      image: imageurl,
+      type: type,
+      color: color,
+      size: size.toUpperCase().split(","),
+      description: desc,
+      price: price,
+      brand: brand,
+      category: category,
+      subCategory: subcategory,
+    };
+    if (imageurl.length > 0) {
+      dispatch(addProductThunk(data)).then((data) => {
+        console.log(data);
+        if (data.payload.type === SUCCESS) {
+          reset();
+          setImageurl([]);
+        }
+      });
+    } else {
+      setError("imageurl", {
+        type: "manual",
+        message: "minimum 1 and maximum 5 images are allowed",
+      });
+    }
+  };
+
   //useEffect
   const type = watch("type");
   useEffect(() => {
@@ -151,7 +231,7 @@ const AdminAddProduct = () => {
     setValue("subcategory", "");
   }, [type]);
   useEffect(() => {
-    setSubData(typeData?.data?.filter((ele) => ele.category === category));
+    setSubData(typeData?.filter((ele) => ele.category === category));
   }, [category]);
 
   return (
@@ -172,19 +252,15 @@ const AdminAddProduct = () => {
         </Alert>
       </Snackbar>
       <Snackbar
-        open={successMsg}
+        open={isSuccess}
         anchorOrigin={{ vertical, horizontal }}
         autoHideDuration={3000}
-        onClose={() => {
-          setSuccessMsg(false);
-        }}
+        onClose={clearSuccess}
       >
         <Alert
           severity="success"
           variant="filled"
-          onClose={() => {
-            setSuccessMsg(false);
-          }}
+          onClose={clearSuccess}
           sx={{ width: "100%" }}
         >
           {message}
@@ -194,18 +270,9 @@ const AdminAddProduct = () => {
         sx={{
           marginLeft: "25rem",
           paddingTop: "3rem",
-          width: "100%",
         }}
       >
-        <div
-          style={{
-            padding: "0rem 0rem",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            width: 850,
-          }}
-        >
+        <StyledDiv>
           <Box>
             <TextField
               margin="dense"
@@ -281,7 +348,7 @@ const AdminAddProduct = () => {
               open={anchorEl}
               onClose={handleClose}
             >
-              {typeData?.data?.map((data) => {
+              {typeData?.map((data) => {
                 return (
                   <MenuItem
                     {...register("category")}
@@ -293,6 +360,15 @@ const AdminAddProduct = () => {
                 );
               })}
             </Menu>
+            <Typography sx={{ height: "1.5rem", fontSize: "0.8rem" }}>
+              <ErrorMessage
+                errors={errors}
+                name="category"
+                render={({ message }) => (
+                  <span style={{ color: "maroon" }}>{message}</span>
+                )}
+              />
+            </Typography>
           </div>
           <div>
             <Button
@@ -328,9 +404,18 @@ const AdminAddProduct = () => {
                 );
               })}
             </Menu>
+            <Typography sx={{ height: "1.5rem", fontSize: "0.8rem" }}>
+              <ErrorMessage
+                errors={errors}
+                name="subcategory"
+                render={({ message }) => (
+                  <span style={{ color: "maroon" }}>{message}</span>
+                )}
+              />
+            </Typography>
           </div>
-        </div>
-        <div style={{ marginTop: "3rem" }}>
+        </StyledDiv>
+        <StyledDiv>
           <Box>
             <label
               htmlFor="color"
@@ -362,7 +447,142 @@ const AdminAddProduct = () => {
               />
             </Typography>
           </Box>
+          <Box>
+            <TextField
+              margin="dense"
+              id="price"
+              label="Price"
+              name="price"
+              type="number"
+              variant="standard"
+              {...register("price")}
+              onBlur={handleBlur}
+            ></TextField>
+            <Typography sx={{ height: "1.5rem", fontSize: "0.8rem" }}>
+              <ErrorMessage
+                errors={errors}
+                name="price"
+                render={({ message }) => (
+                  <span style={{ color: "maroon" }}>{message}</span>
+                )}
+              />
+            </Typography>
+          </Box>
+          <Box>
+            <TextField
+              margin="dense"
+              id="standard-multiline-static"
+              label="Description"
+              name="desc"
+              multiline
+              maxRows={4}
+              variant="standard"
+              {...register("desc")}
+              onBlur={handleBlur}
+            ></TextField>
+            <Typography sx={{ height: "1.5rem", fontSize: "0.8rem" }}>
+              <ErrorMessage
+                errors={errors}
+                name="desc"
+                render={({ message }) => (
+                  <span style={{ color: "maroon" }}>{message}</span>
+                )}
+              />
+            </Typography>
+          </Box>
+        </StyledDiv>
+        <div style={{ width: 850 }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "flex-start",
+            }}
+          >
+            <Box>
+              <TextField
+                margin="dense"
+                id="image"
+                label="Image url"
+                name="image"
+                variant="outlined"
+                {...register("imageurl")}
+                onBlur={handleBlur}
+                sx={{ width: 800 }}
+              ></TextField>
+              <Typography sx={{ height: "1.5rem", fontSize: "0.8rem" }}>
+                <ErrorMessage
+                  errors={errors}
+                  name="imageurl"
+                  render={({ message }) => (
+                    <span style={{ color: "maroon" }}>{message}</span>
+                  )}
+                />
+              </Typography>
+            </Box>
+            <AddAPhotoIcon
+              sx={{ fontSize: 44, marginTop: 1, cursor: "pointer" }}
+              onClick={(e) => addImage(e)}
+            />
+          </div>
+          <Box
+            sx={{
+              display: "flex",
+              width: "850",
+              height: 250,
+              justifyContent: "space-between",
+              padding: "0.5rem 0.5rem",
+              overflowX: "scroll",
+            }}
+          >
+            {imageurl?.map((data) => {
+              return (
+                <div style={{ position: "relative" }}>
+                  <img src={data} alt="" style={{ width: 150, height: 200 }} />
+                  <HighlightOffRoundedIcon
+                    sx={{
+                      position: "absolute",
+                      top: -8,
+                      right: -7,
+                      cursor: "pointer",
+                    }}
+                    onClick={() => deleteImg(data)}
+                  />
+                </div>
+              );
+            })}
+          </Box>
         </div>
+        <StyledDiv>
+          <Box>
+            <TextField
+              margin="dense"
+              id="size"
+              label="Sizes e.g:- S,M,L"
+              name="size"
+              variant="outlined"
+              {...register("size")}
+              onBlur={handleBlur}
+            ></TextField>
+            <Typography sx={{ height: "1.5rem", fontSize: "0.8rem" }}>
+              <ErrorMessage
+                errors={errors}
+                name="size"
+                render={({ message }) => (
+                  <span style={{ color: "maroon" }}>{message}</span>
+                )}
+              />
+            </Typography>
+          </Box>
+          <Button
+            variant="contained"
+            type="submit"
+            onClick={handleSubmit(onSubmit)}
+            sx={{ padding: "1rem 1rem" }}
+          >
+            Add product
+          </Button>
+        </StyledDiv>
       </Box>
     </>
   );

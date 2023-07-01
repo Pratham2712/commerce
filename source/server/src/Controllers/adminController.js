@@ -1,6 +1,7 @@
 import { FAILURE, SUCCESS } from "../constants/constants.js";
 import {
   addCategoryService,
+  addProductService,
   addSubService,
   deleteCatService,
   deleteSubService,
@@ -137,6 +138,27 @@ export const getCatbyTypeController = async (req, res, next) => {
       return res.status(400).json({
         type: FAILURE,
         message: "Failed to delete",
+        errors: [],
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const addProductController = async (req, res, next) => {
+  try {
+    const result = await addProductService(req.body);
+    if (result) {
+      return res.status(200).json({
+        type: SUCCESS,
+        message: "Product added sucessfully",
+        data: result,
+      });
+    } else {
+      return res.status(400).json({
+        type: FAILURE,
+        message: "Failed to add",
         errors: [],
       });
     }

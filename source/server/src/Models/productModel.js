@@ -4,13 +4,12 @@ const productSchema = new mongoose.Schema({
   title: {
     type: String,
     required: true,
-    unique: true,
   },
   image: {
     type: [String],
     required: true,
   },
-  gender: {
+  type: {
     type: String,
     enum: ["MALE", "FEMALE", "KIDS", "NOT SPECIFIED"],
     default: "NOT SPECIFIED",
@@ -18,14 +17,13 @@ const productSchema = new mongoose.Schema({
   },
   color: {
     type: String,
-    required: true,
   },
   size: {
     type: [String],
     required: true,
   },
   description: {
-    type: [String],
+    type: String,
     required: true,
   },
   price: {

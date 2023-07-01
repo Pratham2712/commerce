@@ -1,4 +1,5 @@
 import categoryModel from "../Models/categoryModel.js";
+import productModel from "../Models/productModel.js";
 
 export const addCategoryService = async (data) => {
   const res = await categoryModel.create(data);
@@ -38,5 +39,10 @@ export const getCatbyTypeService = async ({ type }) => {
     { type: type },
     { category: 1, subCategory: 1 }
   );
+  return res;
+};
+
+export const addProductService = async (data) => {
+  const res = await productModel.create(data);
   return res;
 };
