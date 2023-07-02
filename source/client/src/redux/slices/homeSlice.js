@@ -22,6 +22,18 @@ export const getTypeCatThunk = createAsyncThunk(
   }
 );
 
+export const getProductThunk = createAsyncThunk(
+  "/home/getproduct",
+  async (data) => {
+    try {
+      const res = await axios.post(`${BASE_URL}/home/getproduct`, data);
+      return res.data;
+    } catch (error) {
+      return error.response.data;
+    }
+  }
+);
+
 const initialState = {
   loading: false,
   updateDone: false,
@@ -36,9 +48,11 @@ const initialState = {
   isError: false,
   data: {
     category: [],
+    products: [],
   },
   status: {
     getTypeCatThunk: IDLE,
+    getProductThunk: IDLE,
   },
 };
 
@@ -75,6 +89,32 @@ const homeSlice = createSlice({
       })
       .addCase(getTypeCatThunk.rejected, (state, action) => {
         state.status.getTypeCatThunk = ERROR;
+        state.loading = false;
+        state.errorData.message = action.error.message;
+      })
+      //getProductThunk======================================================================================================
+      .addCase(getProductThunk.pending, (state, { payload }) => {
+        state.loading = true;
+      })
+      .addCase(getProductThunk.fulfilled, (state, { payload }) => {
+        switch (payload.type) {
+          case SUCCESS:
+            state.data.products = payload.data;
+            state.loading = false;
+            state.status.getProductThunk = FULFILLED;
+            break;
+          default:
+            state.loading = false;
+            state.errorData = {
+              message: payload.message,
+              type: payload.type,
+              errors: payload.errors,
+            };
+            break;
+        }
+      })
+      .addCase(getProductThunk.rejected, (state, action) => {
+        state.status.getProductThunk = ERROR;
         state.loading = false;
         state.errorData.message = action.error.message;
       });

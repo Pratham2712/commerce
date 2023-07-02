@@ -1,8 +1,12 @@
 import { Router } from "express";
-import { getTypeCatController } from "../Controllers/homeController.js";
+import {
+  getProductController,
+  getTypeCatController,
+} from "../Controllers/homeController.js";
 
 const homeRouter = Router();
 
 homeRouter.post("/getTypeCat", getTypeCatController);
+homeRouter.post("/getproduct", getProductController);
 
 export { homeRouter };
