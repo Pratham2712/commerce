@@ -1,11 +1,21 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
 import Toolbar from "@mui/material/Toolbar";
 import Button from "@mui/material/Button";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
-import { Menu, Skeleton, Typography } from "@mui/material";
+import {
+  ClickAwayListener,
+  Grow,
+  Menu,
+  MenuItem,
+  MenuList,
+  Paper,
+  Popper,
+  Skeleton,
+  Typography,
+} from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { getTypeCatThunk } from "../redux/slices/homeSlice";
 import { useTheme } from "@mui/material/styles";
@@ -21,6 +31,11 @@ const Typenav = () => {
   const category = useSelector(
     (state) => state.rootReducer.homeSlice.data.category
   );
+  const male = useSelector((state) => state.rootReducer.homeSlice.data.male);
+  const female = useSelector(
+    (state) => state.rootReducer.homeSlice.data.female
+  );
+  const kids = useSelector((state) => state.rootReducer.homeSlice.data.kids);
   const loading = useSelector((state) => state.rootReducer.homeSlice.loading);
   //Functions
   const getTypeCat = (type) => {
@@ -38,8 +53,20 @@ const Typenav = () => {
     setAnchorEl(null);
   };
 
+  //useEffect
+  useEffect(() => {
+    dispatch(getTypeCatThunk({ type: "MALE" }));
+    dispatch(getTypeCatThunk({ type: "FEMALE" }));
+    dispatch(getTypeCatThunk({ type: "KIDS" }));
+  }, []);
+
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box
+      sx={{ display: "flex" }}
+      onMouseLeave={() => {
+        handleClose();
+      }}
+    >
       <CssBaseline />
       <AppBar
         component="nav"
@@ -68,8 +95,13 @@ const Typenav = () => {
                 key={item}
                 sx={{ color: "black" }}
                 value={item}
-                onClick={(e) => {
-                  getTypeCat(e.target.value);
+                // onClick={(e) => {
+                //   getTypeCat(e.target.value);
+                //   handleMenu(e);
+                // }}
+                onMouseOver={(e) => {
+                  console.log(e.target.value);
+                  //handleClose();
                   handleMenu(e);
                 }}
               >
@@ -79,7 +111,55 @@ const Typenav = () => {
           </Breadcrumbs>
         </Toolbar>
       </AppBar>
-      <Menu
+      <Popper
+        open={anchorEl}
+        anchorEl={anchorEl}
+        role={undefined}
+        placement="bottom-start"
+        transition
+        disablePortal
+        sx={{ zIndex: 10 }}
+      >
+        {({ TransitionProps, placement }) => (
+          <Grow
+            {...TransitionProps}
+            style={{
+              transformOrigin:
+                placement === "bottom-start" ? "left top" : "left bottom",
+            }}
+          >
+            <Paper>
+              <ClickAwayListener onClickAway={handleClose}>
+                {/* {console.log(anchorEl?.value)}
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-around",
+                    padding: "1rem 1rem",
+                    width: 350,
+                  }}
+                >
+                  {anchorEl?.value === "MALE" ? (
+                    male.map((data) => {
+                      return <></>;
+                    })
+                  ) : (
+                    <></>
+                  )}
+                </Box> */}
+                <MenuList>
+                  <MenuItem onClick={handleClose}>Profile</MenuItem>
+                  <MenuItem onClick={handleClose}>My account</MenuItem>
+                  <MenuItem onClick={handleClose}>Logout</MenuItem>
+                </MenuList>
+              </ClickAwayListener>
+            </Paper>
+          </Grow>
+        )}
+      </Popper>
+
+      {/* <Menu
         id="menu-appbar"
         anchorEl={anchorEl}
         anchorOrigin={{
@@ -121,7 +201,7 @@ const Typenav = () => {
             })}
           </Box>
         )}
-      </Menu>
+      </Menu> */}
     </Box>
   );
 };

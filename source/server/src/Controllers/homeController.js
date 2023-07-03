@@ -12,6 +12,7 @@ export const getTypeCatController = async (req, res, next) => {
         type: SUCCESS,
         message: "Fetched successfully",
         data: result,
+        gender: req.body?.type,
       });
     } else {
       return res.status(400).json({

@@ -325,6 +325,15 @@ const AdminAddProduct = () => {
                 label="Kids"
               />
             </RadioGroup>
+            <Typography sx={{ height: "1.5rem", fontSize: "0.8rem" }}>
+              <ErrorMessage
+                errors={errors}
+                name="type"
+                render={({ message }) => (
+                  <span style={{ color: "maroon" }}>{message}</span>
+                )}
+              />
+            </Typography>
           </FormControl>
           <div>
             <Button

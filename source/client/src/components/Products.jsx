@@ -62,7 +62,14 @@ const Products = () => {
                 {data?.title.slice(0, 25)}...
               </Typography>
             </CardContent>
-            <CardActions>
+            <CardActions
+              sx={{
+                padding: " 0.5rem 1rem",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
               <IconButton
                 aria-label="add to favorites"
                 sx={{ position: "absolute", top: 5, left: 2 }}
@@ -75,6 +82,7 @@ const Products = () => {
               >
                 ₹{data?.price}
               </Typography>
+              <Button variant="contained">Add to cart</Button>
             </CardActions>
           </Card>
         );
