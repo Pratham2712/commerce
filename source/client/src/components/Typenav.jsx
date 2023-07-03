@@ -31,11 +31,6 @@ const Typenav = () => {
   const category = useSelector(
     (state) => state.rootReducer.homeSlice.data.category
   );
-  const male = useSelector((state) => state.rootReducer.homeSlice.data.male);
-  const female = useSelector(
-    (state) => state.rootReducer.homeSlice.data.female
-  );
-  const kids = useSelector((state) => state.rootReducer.homeSlice.data.kids);
   const loading = useSelector((state) => state.rootReducer.homeSlice.loading);
   //Functions
   const getTypeCat = (type) => {
@@ -55,9 +50,7 @@ const Typenav = () => {
 
   //useEffect
   useEffect(() => {
-    dispatch(getTypeCatThunk({ type: "MALE" }));
-    dispatch(getTypeCatThunk({ type: "FEMALE" }));
-    dispatch(getTypeCatThunk({ type: "KIDS" }));
+    dispatch(getTypeCatThunk());
   }, []);
 
   return (
@@ -100,7 +93,6 @@ const Typenav = () => {
                 //   handleMenu(e);
                 // }}
                 onMouseOver={(e) => {
-                  console.log(e.target.value);
                   //handleClose();
                   handleMenu(e);
                 }}
@@ -130,29 +122,40 @@ const Typenav = () => {
           >
             <Paper>
               <ClickAwayListener onClickAway={handleClose}>
-                {/* {console.log(anchorEl?.value)}
-
-                <Box
+                <MenuList
                   sx={{
                     display: "flex",
                     justifyContent: "space-around",
                     padding: "1rem 1rem",
                     width: 350,
+                    height: 200,
                   }}
                 >
-                  {anchorEl?.value === "MALE" ? (
-                    male.map((data) => {
-                      return <></>;
-                    })
-                  ) : (
-                    <></>
-                  )}
-                </Box> */}
-                <MenuList>
+                  {category?.[0]?.data?.map((ele) => {
+                    if (anchorEl?.value == ele?.type) {
+                      return ele?.categories?.map((data) => {
+                        return (
+                          <>
+                            {" "}
+                            <Typography
+                              sx={{ fontWeight: "bold", marginBottom: 1 }}
+                            >
+                              {data?.category}
+                              {data?.subCategory?.map((elm) => {
+                                return <MenuList>{elm}</MenuList>;
+                              })}
+                            </Typography>
+                          </>
+                        );
+                      });
+                    }
+                  })}
+                </MenuList>
+                {/* <MenuList>
                   <MenuItem onClick={handleClose}>Profile</MenuItem>
                   <MenuItem onClick={handleClose}>My account</MenuItem>
                   <MenuItem onClick={handleClose}>Logout</MenuItem>
-                </MenuList>
+                </MenuList> */}
               </ClickAwayListener>
             </Paper>
           </Grow>

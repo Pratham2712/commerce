@@ -77,13 +77,6 @@ const homeSlice = createSlice({
         switch (payload.type) {
           case SUCCESS:
             state.data.category = payload.data;
-            if (payload.gender === "MALE") {
-              state.data.male = payload.data;
-            } else if (payload.gender === "FEMALE") {
-              state.data.female = payload.data;
-            } else {
-              state.data.kids = payload.data;
-            }
             state.loading = false;
             state.status.getTypeCatThunk = FULFILLED;
             break;
