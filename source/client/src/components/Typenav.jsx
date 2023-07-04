@@ -8,8 +8,6 @@ import Breadcrumbs from "@mui/material/Breadcrumbs";
 import {
   ClickAwayListener,
   Grow,
-  Menu,
-  MenuItem,
   MenuList,
   Paper,
   Popper,
@@ -17,11 +15,13 @@ import {
   Typography,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { getTypeCatThunk } from "../redux/slices/homeSlice";
+import { getProductThunk, getTypeCatThunk } from "../redux/slices/homeSlice";
 import { useTheme } from "@mui/material/styles";
+import { createSearchParams, useSearchParams } from "react-router-dom";
 
 const Typenav = () => {
   const [anchorEl, setAnchorEl] = useState(null);
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const navItems = ["MALE", "FEMALE", "KIDS"];
   const dispatch = useDispatch();
@@ -33,13 +33,6 @@ const Typenav = () => {
   );
   const loading = useSelector((state) => state.rootReducer.homeSlice.loading);
   //Functions
-  const getTypeCat = (type) => {
-    const data = {
-      type: type,
-    };
-    dispatch(getTypeCatThunk(data));
-  };
-
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -48,14 +41,30 @@ const Typenav = () => {
     setAnchorEl(null);
   };
 
+  const subcatParam = (type, subcategory) => {
+    const params = Object.fromEntries(searchParams);
+    params["type"] = type;
+    params["subcategory"] = subcategory;
+    setSearchParams(createSearchParams(params));
+    handleClose();
+  };
+
   //useEffect
   useEffect(() => {
     dispatch(getTypeCatThunk());
   }, []);
 
+  useEffect(() => {
+    const data = {
+      type: searchParams.get("type"),
+      sub: searchParams.get("subcategory"),
+    };
+    dispatch(getProductThunk(data));
+  }, [searchParams.get("type"), searchParams.get("subcategory")]);
+
   return (
     <Box
-      sx={{ display: "flex" }}
+      sx={{ display: "flex", position: "relative" }}
       onMouseLeave={() => {
         handleClose();
       }}
@@ -88,10 +97,6 @@ const Typenav = () => {
                 key={item}
                 sx={{ color: "black" }}
                 value={item}
-                // onClick={(e) => {
-                //   getTypeCat(e.target.value);
-                //   handleMenu(e);
-                // }}
                 onMouseOver={(e) => {
                   //handleClose();
                   handleMenu(e);
@@ -103,108 +108,82 @@ const Typenav = () => {
           </Breadcrumbs>
         </Toolbar>
       </AppBar>
+
       <Popper
         open={anchorEl}
-        anchorEl={anchorEl}
+        //anchorEl={anchorEl}
         role={undefined}
-        placement="bottom-start"
+        placement="center"
         transition
         disablePortal
-        sx={{ zIndex: 10 }}
+        sx={{
+          zIndex: 100,
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          paddingTop: "105px",
+        }}
       >
         {({ TransitionProps, placement }) => (
-          <Grow
-            {...TransitionProps}
-            style={{
-              transformOrigin:
-                placement === "bottom-start" ? "left top" : "left bottom",
-            }}
-          >
-            <Paper>
-              <ClickAwayListener onClickAway={handleClose}>
-                <MenuList
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-around",
-                    padding: "1rem 1rem",
-                    width: 350,
-                    height: 200,
-                  }}
-                >
-                  {category?.[0]?.data?.map((ele) => {
-                    if (anchorEl?.value == ele?.type) {
-                      return ele?.categories?.map((data) => {
-                        return (
-                          <>
-                            {" "}
-                            <Typography
-                              sx={{ fontWeight: "bold", marginBottom: 1 }}
-                            >
-                              {data?.category}
-                              {data?.subCategory?.map((elm) => {
-                                return <MenuList>{elm}</MenuList>;
-                              })}
-                            </Typography>
-                          </>
-                        );
-                      });
-                    }
-                  })}
-                </MenuList>
-                {/* <MenuList>
-                  <MenuItem onClick={handleClose}>Profile</MenuItem>
-                  <MenuItem onClick={handleClose}>My account</MenuItem>
-                  <MenuItem onClick={handleClose}>Logout</MenuItem>
-                </MenuList> */}
-              </ClickAwayListener>
-            </Paper>
+          <Grow {...TransitionProps}>
+            {loading ? (
+              <Skeleton variant="rounded" width={350} height={200} />
+            ) : (
+              <Paper>
+                <ClickAwayListener onClickAway={handleClose}>
+                  <MenuList
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-around",
+                      padding: "1rem 0rem 1rem 3rem",
+                    }}
+                  >
+                    {category?.[0]?.data?.map((ele) => {
+                      if (anchorEl?.value === ele?.type) {
+                        return ele?.categories?.map((data) => {
+                          return (
+                            <>
+                              {" "}
+                              <Typography
+                                sx={{
+                                  fontWeight: "bold",
+                                  marginBottom: 1,
+                                  marginRight: "3rem",
+                                }}
+                              >
+                                {data?.category}
+                                {data?.subCategory?.map((elm) => {
+                                  return (
+                                    <Typography
+                                      sx={{
+                                        cursor: "pointer",
+                                        textDecoration: "none",
+                                        "&:hover": {
+                                          textDecoration: "underline",
+                                        },
+                                      }}
+                                      onClick={() =>
+                                        subcatParam(anchorEl?.value, elm)
+                                      }
+                                    >
+                                      {elm}
+                                    </Typography>
+                                  );
+                                })}
+                              </Typography>
+                            </>
+                          );
+                        });
+                      }
+                    })}
+                  </MenuList>
+                </ClickAwayListener>
+              </Paper>
+            )}
           </Grow>
         )}
       </Popper>
-
-      {/* <Menu
-        id="menu-appbar"
-        anchorEl={anchorEl}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "center",
-        }}
-        keepMounted
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "center",
-        }}
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
-      >
-        {loading ? (
-          <Skeleton variant="rounded" width={350} height={200} />
-        ) : (
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-around",
-              padding: "1rem 1rem",
-              width: 350,
-            }}
-          >
-            {category?.map((data) => {
-              return (
-                <Box>
-                  <Typography sx={{ fontWeight: "bold", marginBottom: 1 }}>
-                    {data?.category}
-                  </Typography>
-                  <Typography>
-                    {data?.subCategory?.map((elm) => {
-                      return <Typography>{elm}</Typography>;
-                    })}
-                  </Typography>
-                </Box>
-              );
-            })}
-          </Box>
-        )}
-      </Menu> */}
     </Box>
   );
 };

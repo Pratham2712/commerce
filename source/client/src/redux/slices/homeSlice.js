@@ -52,6 +52,7 @@ const initialState = {
     male: [],
     female: [],
     kids: [],
+    total: 0,
   },
   status: {
     getTypeCatThunk: IDLE,
@@ -103,6 +104,7 @@ const homeSlice = createSlice({
         switch (payload.type) {
           case SUCCESS:
             state.data.products = payload.data;
+            state.data.total = payload.total;
             state.loading = false;
             state.status.getProductThunk = FULFILLED;
             break;

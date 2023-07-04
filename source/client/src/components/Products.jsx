@@ -1,30 +1,62 @@
-import React, { useDeferredValue, useEffect } from "react";
+import React, { useEffect } from "react";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { useDispatch, useSelector } from "react-redux";
 import { getProductThunk } from "../redux/slices/homeSlice";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import { IconButton } from "@mui/material";
+import { IconButton, Pagination, Stack } from "@mui/material";
+import { createSearchParams, useSearchParams } from "react-router-dom";
 
 const Products = () => {
   const dispatch = useDispatch();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   //useSelector
   const product = useSelector(
     (state) => state.rootReducer.homeSlice.data.products
   );
+  console.log(product);
+  const total = useSelector((state) => state.rootReducer.homeSlice.data.total);
+  //Function
+  const pageParams = (page, pageSize) => {
+    const params = Object.fromEntries(searchParams);
+    params["page"] = page;
+    params["pagesize"] = pageSize;
+    setSearchParams(createSearchParams(params));
+  };
   //useEffect
   useEffect(() => {
-    const data = {};
+    pageParams(
+      searchParams.get("page") || 1,
+      searchParams.get("pagesize") || 4
+    );
+    const data = {
+      page: searchParams.get("page") - 1,
+      pagesize: searchParams.get("pagesize"),
+    };
     dispatch(getProductThunk(data));
-  }, []);
+  }, [
+    searchParams.get("page"),
+    searchParams.get("pagesize"),
+    searchParams.get("type"),
+    searchParams.get("subcategory"),
+  ]);
+  console.log(searchParams.get("page"), searchParams.get("pagesize"));
+
+  // useEffect(() => {
+  //   const data = {
+  //     page: searchParams.get("page") - 1,
+  //     pagesize: searchParams.get("pagesize"),
+  //   };
+  //   dispatch(getProductThunk(data));
+  // }, [searchParams.get("page"), searchParams.get("pagesize")]);
+
   return (
-    <Box sx={{ display: "flex", flexWrap: "wrap" }}>
+    <Box sx={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
       {product.map((data) => {
         return (
           <Card
@@ -40,11 +72,6 @@ const Products = () => {
               position: "relative",
             }}
           >
-            {/* <CardMedia
-              sx={{ minHeight: 200 }}
-              image={data?.image?.[0]}
-              title="green iguana"
-            /> */}
             <img
               src={data?.image?.[0]}
               alt=""
@@ -87,6 +114,25 @@ const Products = () => {
           </Card>
         );
       })}
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignContent: "center",
+          width: "100%",
+        }}
+      >
+        <Stack spacing={2}>
+          <Pagination
+            count={total}
+            onChange={(e, value) => {
+              pageParams(parseInt(value), 4);
+            }}
+            color="primary"
+            page={parseInt(searchParams.get("page"))}
+          />
+        </Stack>
+      </Box>
     </Box>
   );
 };

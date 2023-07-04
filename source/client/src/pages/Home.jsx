@@ -5,7 +5,7 @@ import Products from "../components/Products";
 
 const Home = () => {
   return (
-    <Box sx={{ padding: "10rem 10rem" }}>
+    <Box sx={{ padding: "10rem 0rem" }}>
       <Typenav />
       <Products></Products>
     </Box>

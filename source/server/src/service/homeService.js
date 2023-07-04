@@ -60,7 +60,14 @@ export const getTypeCatService = async (data) => {
   return res;
 };
 
-export const getProductService = async (data) => {
-  const res = await productModel.find({});
-  return res;
+export const getProductService = async (data, filter) => {
+  const total = await productModel.find(filter).count();
+  const pagesize = data.pagesize || 4;
+  const page = data.page || 0;
+  const res = await productModel
+    .find(filter, { title: 1, price: 1, image: { $slice: 1 } })
+    .limit(pagesize)
+    .skip(pagesize * page);
+
+  return { total: Math.ceil(total / pagesize), data: res };
 };
