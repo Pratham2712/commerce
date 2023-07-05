@@ -68,6 +68,10 @@ export const getProductService = async (data, filter) => {
     .find(filter, { title: 1, price: 1, image: { $slice: 1 } })
     .limit(pagesize)
     .skip(pagesize * page);
-
   return { total: Math.ceil(total / pagesize), data: res };
+};
+
+export const getProductDetailService = async ({ product_id }) => {
+  const res = await productModel.findById(product_id);
+  return res;
 };

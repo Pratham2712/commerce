@@ -34,6 +34,18 @@ export const getProductThunk = createAsyncThunk(
   }
 );
 
+export const getProductDetailThunk = createAsyncThunk(
+  "/home/getProductDetail",
+  async (data) => {
+    try {
+      const res = await axios.post(`${BASE_URL}/home/getProductDetail`, data);
+      return res.data;
+    } catch (error) {
+      return error.response.data;
+    }
+  }
+);
+
 const initialState = {
   loading: false,
   updateDone: false,
@@ -53,10 +65,12 @@ const initialState = {
     female: [],
     kids: [],
     total: 0,
+    productDetail: {},
   },
   status: {
     getTypeCatThunk: IDLE,
     getProductThunk: IDLE,
+    getProductDetailThunk: IDLE,
   },
 };
 
@@ -120,6 +134,32 @@ const homeSlice = createSlice({
       })
       .addCase(getProductThunk.rejected, (state, action) => {
         state.status.getProductThunk = ERROR;
+        state.loading = false;
+        state.errorData.message = action.error.message;
+      })
+      //getProductDetailThunk======================================================================================================
+      .addCase(getProductDetailThunk.pending, (state, { payload }) => {
+        state.loading = true;
+      })
+      .addCase(getProductDetailThunk.fulfilled, (state, { payload }) => {
+        switch (payload.type) {
+          case SUCCESS:
+            state.data.productDetail = payload.data;
+            state.loading = false;
+            state.status.getProductDetailThunk = FULFILLED;
+            break;
+          default:
+            state.loading = false;
+            state.errorData = {
+              message: payload.message,
+              type: payload.type,
+              errors: payload.errors,
+            };
+            break;
+        }
+      })
+      .addCase(getProductDetailThunk.rejected, (state, action) => {
+        state.status.getProductDetailThunk = ERROR;
         state.loading = false;
         state.errorData.message = action.error.message;
       });

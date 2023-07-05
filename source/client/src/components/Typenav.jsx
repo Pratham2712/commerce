@@ -15,7 +15,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { getProductThunk, getTypeCatThunk } from "../redux/slices/homeSlice";
+import { getTypeCatThunk } from "../redux/slices/homeSlice";
 import { useTheme } from "@mui/material/styles";
 import { createSearchParams, useSearchParams } from "react-router-dom";
 
@@ -54,13 +54,14 @@ const Typenav = () => {
     dispatch(getTypeCatThunk());
   }, []);
 
-  useEffect(() => {
-    const data = {
-      type: searchParams.get("type"),
-      sub: searchParams.get("subcategory"),
-    };
-    dispatch(getProductThunk(data));
-  }, [searchParams.get("type"), searchParams.get("subcategory")]);
+  // useEffect(() => {
+  //   const data = {
+  //     type: searchParams.get("type"),
+  //     sub: searchParams.get("subcategory"),
+
+  //   };
+  //   dispatch(getProductThunk(data));
+  // }, [searchParams.get("type"), searchParams.get("subcategory")]);
 
   return (
     <Box

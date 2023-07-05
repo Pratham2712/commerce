@@ -1,5 +1,6 @@
 export const USER_Root = "/";
 export const User_Home = USER_Root + "/home";
+export const product_page = (id) => `${USER_Root}productdetails/${id}`;
 
 //admin
 export const Admin_root = "/admin";

@@ -9,18 +9,24 @@ import { useDispatch, useSelector } from "react-redux";
 import { getProductThunk } from "../redux/slices/homeSlice";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { IconButton, Pagination, Stack } from "@mui/material";
-import { createSearchParams, useSearchParams } from "react-router-dom";
+import {
+  createSearchParams,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
+import { product_page } from "../constants/links";
 
 const Products = () => {
   const dispatch = useDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   //useSelector
   const product = useSelector(
     (state) => state.rootReducer.homeSlice.data.products
   );
-  console.log(product);
   const total = useSelector((state) => state.rootReducer.homeSlice.data.total);
+
   //Function
   const pageParams = (page, pageSize) => {
     const params = Object.fromEntries(searchParams);
@@ -37,6 +43,8 @@ const Products = () => {
     const data = {
       page: searchParams.get("page") - 1,
       pagesize: searchParams.get("pagesize"),
+      type: searchParams.get("type"),
+      sub: searchParams.get("subcategory"),
     };
     dispatch(getProductThunk(data));
   }, [
@@ -45,15 +53,6 @@ const Products = () => {
     searchParams.get("type"),
     searchParams.get("subcategory"),
   ]);
-  console.log(searchParams.get("page"), searchParams.get("pagesize"));
-
-  // useEffect(() => {
-  //   const data = {
-  //     page: searchParams.get("page") - 1,
-  //     pagesize: searchParams.get("pagesize"),
-  //   };
-  //   dispatch(getProductThunk(data));
-  // }, [searchParams.get("page"), searchParams.get("pagesize")]);
 
   return (
     <Box sx={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
@@ -70,6 +69,10 @@ const Products = () => {
               boxShadow:
                 "rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px",
               position: "relative",
+              cursor: "pointer",
+            }}
+            onClick={() => {
+              navigate(product_page(data?._id));
             }}
           >
             <img
