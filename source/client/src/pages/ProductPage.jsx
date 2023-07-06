@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import { getProductDetailThunk } from "../redux/slices/homeSlice.js";
 import { useDispatch, useSelector } from "react-redux";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { useTheme } from "@mui/material/styles";
 import {
   Lazy,
   Autoplay,
@@ -25,6 +26,7 @@ const ProductPage = () => {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
   const { id } = useParams();
   const dispatch = useDispatch();
+  const theme = useTheme();
   //useSelector
   const product = useSelector(
     (state) => state.rootReducer.homeSlice.data.productDetail
@@ -37,12 +39,28 @@ const ProductPage = () => {
     dispatch(getProductDetailThunk(data));
   }, []);
   return (
-    <Box sx={{ padding: "7rem 0rem" }}>
+    <Box
+      sx={{
+        padding: "7rem 0rem 0rem 0rem",
+        overflowX: "hidden",
+      }}
+    >
       <Box
         sx={{
           display: "flex",
-          justifyContent: "space-around",
+          justifyContent: "space-evenly",
           padding: "0rem 18rem",
+          [theme.breakpoints.down("lg")]: {
+            padding: "0rem 3rem",
+            flexDirection: "column",
+          },
+          [theme.breakpoints.down("md")]: {
+            padding: "0rem 3rem",
+            flexDirection: "column",
+          },
+          [theme.breakpoints.down("sm")]: {
+            padding: "0rem 0.1rem",
+          },
         }}
       >
         <div
@@ -50,7 +68,6 @@ const ProductPage = () => {
           style={{
             display: "flex",
             flexDirection: "column-reverse",
-            width: "fit-content",
           }}
         >
           <Swiper
@@ -106,44 +123,64 @@ const ProductPage = () => {
               justifyContent: "center",
               alignItems: "center",
             }}
+            className="swiper"
           >
             {product?.image?.map((data) => {
               return (
                 <SwiperSlide>
-                  <div className="swiper-zoom-container">
+                  <Box
+                    className="swiper-zoom-container"
+                    sx={{
+                      width: "100%",
+                      height: "100%",
+                    }}
+                  >
                     <img
                       src={data}
                       alt=""
                       loading="lazy"
                       style={{ width: "100%", height: "100%" }}
                     />
-                  </div>
+                  </Box>
                 </SwiperSlide>
               );
             })}
           </Swiper>
         </div>
-        <div
+        <Box
           style={{
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-between",
+            //marginLeft: "1rem",
+            minHeight: "32rem",
+            padding: "2rem 0rem",
           }}
         >
           <Typography variant="h6" sx={{ float: "left" }}>
             Brand : {product?.brand}
           </Typography>
-          <Typography sx={{ fontSize: "2rem" }}>{product?.title}</Typography>
+          <Typography
+            sx={{
+              fontSize: "2rem",
+
+              [theme.breakpoints.down("sm")]: {
+                fontSize: "1.5rem",
+              },
+            }}
+          >
+            {product?.title}
+          </Typography>
           <div
             style={{
               display: "flex",
               alignItems: "center",
-              justifyContent: "flex-start",
+              justifyContent: "center",
             }}
           >
             {product?.color && (
               <>
-                <Typography>color : </Typography>
+                <Typography variant="h6">color : </Typography>
                 <Chip
                   label="B"
                   variant="filled"
@@ -158,8 +195,17 @@ const ProductPage = () => {
             )}
           </div>
           <Box>
-            <Typography sx={{ textAlign: "center" }}> select size </Typography>
-            <div style={{ display: "flex", justifyContent: "center" }}>
+            <Typography variant="h6" sx={{ textAlign: "center" }}>
+              {" "}
+              select size{" "}
+            </Typography>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                marginTop: "0.5rem",
+              }}
+            >
               {product?.size?.map((data) => {
                 return (
                   <Chip
@@ -175,18 +221,20 @@ const ProductPage = () => {
             ₹{product?.price}
           </Typography>
           <div
-            sx={{
+            style={{
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
               width: "100%",
             }}
           >
-            <Button variant="contained">Add to cart</Button>
+            <Button variant="contained" sx={{ marginRight: "2rem" }}>
+              Add to cart
+            </Button>
             <Button variant="outlined">Add to wishlist</Button>
           </div>
           <div>{product?.description}</div>
-        </div>
+        </Box>
       </Box>
     </Box>
   );

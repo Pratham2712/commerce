@@ -1,4 +1,5 @@
 import {
+  addtocartService,
   getProductDetailService,
   getProductService,
   getTypeCatService,
@@ -75,6 +76,54 @@ export const getProductController = async (req, res, next) => {
       return res.status(400).json({
         type: FAILURE,
         message: "Failed to fetch",
+        errors: [],
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const addtocartController = async (req, res, next) => {
+  try {
+    const data = {
+      userId: req.body?._id,
+      product_id: req.body?.product_id,
+    };
+    const result = await addtocartService(data);
+    if (result) {
+      return res.status(200).json({
+        type: SUCCESS,
+        message: "Add to cart successfully",
+        data: result,
+      });
+    } else {
+      return res.status(400).json({
+        type: FAILURE,
+        message: "Failed to add to cart",
+        errors: [],
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+export const getAllCartController = async (req, res, next) => {
+  try {
+    const data = {
+      userId: req.body?._id,
+    };
+    const result = await getAllCartService(data);
+    if (result) {
+      return res.status(200).json({
+        type: SUCCESS,
+        message: "Add to cart successfully",
+        data: result,
+      });
+    } else {
+      return res.status(400).json({
+        type: FAILURE,
+        message: "Failed to add to cart",
         errors: [],
       });
     }

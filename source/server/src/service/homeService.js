@@ -1,3 +1,4 @@
+import cartModel from "../Models/cartModel.js";
 import categoryModel from "../Models/categoryModel.js";
 import productModel from "../Models/productModel.js";
 
@@ -74,4 +75,28 @@ export const getProductService = async (data, filter) => {
 export const getProductDetailService = async ({ product_id }) => {
   const res = await productModel.findById(product_id);
   return res;
+};
+
+export const addtocartService = async ({ userId, product_id }) => {
+  const cart = await cartModel.findOne({ userId: userId });
+  if (!cart) {
+    const newCart = await cartModel.create({
+      userId: userId,
+      list: [{ product_id: product_id, count: 1 }],
+    });
+    return newCart;
+  }
+
+  const productIndex = cart.list.findIndex((item) =>
+    item.product_id.equals(product_id)
+  );
+
+  if (productIndex === -1) {
+    cart.list.push({ product_id: product_id, count: 1 });
+  } else {
+    cart.list[productIndex].count++;
+  }
+  await cart.save();
+
+  return cart;
 };

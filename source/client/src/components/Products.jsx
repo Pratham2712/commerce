@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
@@ -6,7 +6,7 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { useDispatch, useSelector } from "react-redux";
-import { getProductThunk } from "../redux/slices/homeSlice";
+import { addToCartThunk, getProductThunk } from "../redux/slices/homeSlice";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { IconButton, Pagination, Stack } from "@mui/material";
 import {
@@ -15,18 +15,25 @@ import {
   useSearchParams,
 } from "react-router-dom";
 import { product_page } from "../constants/links";
+import Login from "../pages/Login";
 
 const Products = () => {
   const dispatch = useDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
+  const [loginOpen, setLoginOpen] = useState(false);
 
   //useSelector
   const product = useSelector(
     (state) => state.rootReducer.homeSlice.data.products
   );
   const total = useSelector((state) => state.rootReducer.homeSlice.data.total);
-
+  const isLogin = useSelector(
+    (state) => state.rootReducer.UserInfoSlice.isLogin
+  );
+  const updateDone = useSelector(
+    (state) => state.rootReducer.homeSlice.updateDone
+  );
   //Function
   const pageParams = (page, pageSize) => {
     const params = Object.fromEntries(searchParams);
@@ -34,6 +41,17 @@ const Products = () => {
     params["pagesize"] = pageSize;
     setSearchParams(createSearchParams(params));
   };
+
+  const addToCart = (id) => {
+    if (!isLogin) {
+      return setLoginOpen(!loginOpen);
+    }
+    const data = {
+      product_id: id,
+    };
+    dispatch(addToCartThunk(data));
+  };
+
   //useEffect
   useEffect(() => {
     pageParams(
@@ -54,6 +72,10 @@ const Products = () => {
     searchParams.get("subcategory"),
   ]);
 
+  useEffect(() => {
+    dispatch(getAllCartThunk());
+  }, [updateDone]);
+
   return (
     <Box sx={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
       {product.map((data) => {
@@ -71,9 +93,9 @@ const Products = () => {
               position: "relative",
               cursor: "pointer",
             }}
-            onClick={() => {
-              navigate(product_page(data?._id));
-            }}
+            // onClick={() => {
+            //   navigate(product_page(data?._id));
+            // }}
           >
             <img
               src={data?.image?.[0]}
@@ -112,7 +134,9 @@ const Products = () => {
               >
                 ₹{data?.price}
               </Typography>
-              <Button variant="contained">Add to cart</Button>
+              <Button variant="contained" onClick={() => addToCart(data?._id)}>
+                Add to cart
+              </Button>
             </CardActions>
           </Card>
         );
@@ -136,6 +160,7 @@ const Products = () => {
           />
         </Stack>
       </Box>
+      <Login loginOpen={loginOpen} setLoginOpen={setLoginOpen}></Login>
     </Box>
   );
 };
