@@ -82,6 +82,10 @@ const Navbar = () => {
     (state) => state.rootReducer.UserInfoSlice.data.userInfo.username
   );
 
+  const totalCart = useSelector(
+    (state) => state.rootReducer.homeSlice.data.cart.totalCart
+  );
+
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -217,7 +221,7 @@ const Navbar = () => {
                 aria-label="show 4 new mails"
                 color="inherit"
               >
-                <Badge badgeContent={4} color="error">
+                <Badge badgeContent={totalCart} color="error">
                   <ShoppingCartIcon />
                 </Badge>
               </IconButton>

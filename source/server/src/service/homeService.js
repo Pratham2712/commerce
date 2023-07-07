@@ -100,3 +100,12 @@ export const addtocartService = async ({ userId, product_id }) => {
 
   return cart;
 };
+
+export const getAllCartService = async (data) => {
+  const res = await cartModel.findOne({ userId: data?.userId }, { list: 1 });
+  let total = 0;
+  if (res) {
+    total = res.list.reduce((sum, item) => sum + item.count, 0);
+  }
+  return { totalCart: total, data: res };
+};

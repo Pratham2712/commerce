@@ -89,6 +89,10 @@ const initialState = {
     kids: [],
     total: 0,
     productDetail: {},
+    cart: {
+      list: [],
+      totalCart: 0,
+    },
   },
   status: {
     getTypeCatThunk: IDLE,
@@ -223,7 +227,8 @@ const homeSlice = createSlice({
         switch (payload.type) {
           case SUCCESS:
             state.loading = false;
-            state.data.cart = payload.data;
+            state.data.cart.list = payload.data;
+            state.data.cart.totalCart = payload.total;
             state.status.addToCartThunk = FULFILLED;
             break;
           default:

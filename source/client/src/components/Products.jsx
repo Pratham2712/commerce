@@ -6,9 +6,9 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { useDispatch, useSelector } from "react-redux";
-import { addToCartThunk, getProductThunk } from "../redux/slices/homeSlice";
-import FavoriteIcon from "@mui/icons-material/Favorite";
-import { IconButton, Pagination, Stack } from "@mui/material";
+import { getAllCartThunk, getProductThunk } from "../redux/slices/homeSlice";
+
+import { Pagination, Stack } from "@mui/material";
 import {
   createSearchParams,
   useNavigate,
@@ -16,12 +16,14 @@ import {
 } from "react-router-dom";
 import { product_page } from "../constants/links";
 import Login from "../pages/Login";
+import ProductCard from "./ProductCard";
 
 const Products = () => {
   const dispatch = useDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const [loginOpen, setLoginOpen] = useState(false);
+  const [flag, setFlag] = useState(false);
 
   //useSelector
   const product = useSelector(
@@ -34,22 +36,15 @@ const Products = () => {
   const updateDone = useSelector(
     (state) => state.rootReducer.homeSlice.updateDone
   );
+  const cartList = useSelector(
+    (state) => state.rootReducer.homeSlice.data.cart.list
+  );
   //Function
   const pageParams = (page, pageSize) => {
     const params = Object.fromEntries(searchParams);
     params["page"] = page;
     params["pagesize"] = pageSize;
     setSearchParams(createSearchParams(params));
-  };
-
-  const addToCart = (id) => {
-    if (!isLogin) {
-      return setLoginOpen(!loginOpen);
-    }
-    const data = {
-      product_id: id,
-    };
-    dispatch(addToCartThunk(data));
   };
 
   //useEffect
@@ -74,71 +69,18 @@ const Products = () => {
 
   useEffect(() => {
     dispatch(getAllCartThunk());
-  }, [updateDone]);
+  }, [updateDone, isLogin]);
 
   return (
     <Box sx={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
       {product.map((data) => {
         return (
-          <Card
-            sx={{
-              width: 250,
-              maxHeight: 350,
-              padding: "0.5rem 0.5rem",
-              borderRadius: "0.3rem",
-              margin: "0.2rem",
-              marginBottom: "3rem",
-              boxShadow:
-                "rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px",
-              position: "relative",
-              cursor: "pointer",
-            }}
-            // onClick={() => {
-            //   navigate(product_page(data?._id));
-            // }}
-          >
-            <img
-              src={data?.image?.[0]}
-              alt=""
-              style={{
-                maxHeight: "200px",
-                width: "100%",
-                objectFit: "contain",
-              }}
-            />
-            <CardContent>
-              <Typography
-                gutterBottom
-                sx={{ lineHeight: 1.1, fontSize: "1rem", height: "1rem" }}
-              >
-                {data?.title.slice(0, 25)}...
-              </Typography>
-            </CardContent>
-            <CardActions
-              sx={{
-                padding: " 0.5rem 1rem",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <IconButton
-                aria-label="add to favorites"
-                sx={{ position: "absolute", top: 5, left: 2 }}
-              >
-                <FavoriteIcon />
-              </IconButton>
-              <Typography
-                variant="h6"
-                sx={{ fontSize: "1rem", fontWeight: "bold" }}
-              >
-                ₹{data?.price}
-              </Typography>
-              <Button variant="contained" onClick={() => addToCart(data?._id)}>
-                Add to cart
-              </Button>
-            </CardActions>
-          </Card>
+          <ProductCard
+            data={data}
+            loginOpen={loginOpen}
+            setLoginOpen={setLoginOpen}
+            flag={flag}
+          />
         );
       })}
       <Box

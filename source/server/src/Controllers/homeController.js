@@ -1,5 +1,6 @@
 import {
   addtocartService,
+  getAllCartService,
   getProductDetailService,
   getProductService,
   getTypeCatService,
@@ -117,13 +118,14 @@ export const getAllCartController = async (req, res, next) => {
     if (result) {
       return res.status(200).json({
         type: SUCCESS,
-        message: "Add to cart successfully",
-        data: result,
+        message: "Fetch all cart successfully",
+        data: result.data,
+        total: result.totalCart,
       });
     } else {
       return res.status(400).json({
         type: FAILURE,
-        message: "Failed to add to cart",
+        message: "Failed to fetch all cart",
         errors: [],
       });
     }
