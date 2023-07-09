@@ -109,3 +109,25 @@ export const getAllCartService = async (data) => {
   }
   return { totalCart: total, data: res };
 };
+
+export const updateCartService = async (data) => {
+  const cart = await cartModel.findOne({ userId: data?.userId });
+  const productIndex = cart?.list?.findIndex((item) =>
+    item.product_id.equals(data?.product_id)
+  );
+  if (cart && productIndex !== -1) {
+    if (data?.type === "decrement") {
+      const cnt = cart.list[productIndex].count;
+      if (cnt === 1) {
+        cart.list.splice(productIndex, 1);
+      } else {
+        cart.list[productIndex].count--;
+      }
+    } else {
+      cart.list[productIndex].count++;
+    }
+    await cart.save();
+    return cart;
+  }
+  return;
+};

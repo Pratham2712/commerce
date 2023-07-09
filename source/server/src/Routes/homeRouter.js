@@ -5,6 +5,7 @@ import {
   getProductController,
   getProductDetailController,
   getTypeCatController,
+  updateCartController,
 } from "../Controllers/homeController.js";
 import { verifyToken } from "../middlewares/jwtMiddlewares.js";
 
@@ -14,6 +15,7 @@ homeRouter.post("/getTypeCat", getTypeCatController);
 homeRouter.post("/getproduct", getProductController);
 homeRouter.post("/getProductDetail", getProductDetailController);
 homeRouter.post("/addtocart", verifyToken, addtocartController);
+homeRouter.post("/updatecart", verifyToken, updateCartController);
 homeRouter.get("/getallcart", verifyToken, getAllCartController);
 
 export { homeRouter };

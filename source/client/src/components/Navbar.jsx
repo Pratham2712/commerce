@@ -190,9 +190,9 @@ const Navbar = () => {
               variant="h6"
               noWrap
               component="div"
-              sx={{ display: { xs: "none", sm: "block" } }}
+              sx={{ display: { xs: "none", sm: "block" }, fontWeight: "bold" }}
             >
-              Cobra
+              Fashion
             </Typography>
             <Box sx={{ flexGrow: 0.13 }} />
             <Search>

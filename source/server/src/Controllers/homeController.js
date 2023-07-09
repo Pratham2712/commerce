@@ -4,6 +4,7 @@ import {
   getProductDetailService,
   getProductService,
   getTypeCatService,
+  updateCartService,
 } from "../service/homeService.js";
 import { FAILURE, SUCCESS } from "../constants/constants.js";
 
@@ -109,6 +110,7 @@ export const addtocartController = async (req, res, next) => {
     next(error);
   }
 };
+
 export const getAllCartController = async (req, res, next) => {
   try {
     const data = {
@@ -116,16 +118,45 @@ export const getAllCartController = async (req, res, next) => {
     };
     const result = await getAllCartService(data);
     if (result) {
+      let cartDetail = {};
+      result.data.list.forEach((item) => {
+        cartDetail[item.product_id] = item.count;
+      });
       return res.status(200).json({
         type: SUCCESS,
         message: "Fetch all cart successfully",
-        data: result.data,
+        data: cartDetail,
         total: result.totalCart,
       });
     } else {
       return res.status(400).json({
         type: FAILURE,
         message: "Failed to fetch all cart",
+        errors: [],
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+export const updateCartController = async (req, res, next) => {
+  try {
+    const data = {
+      userId: req.body?._id,
+      type: req.body?.type,
+      product_id: req.body?.product_id,
+    };
+    const result = await updateCartService(data);
+    if (result) {
+      return res.status(200).json({
+        type: SUCCESS,
+        message: "Update cart successfully",
+        data: result,
+      });
+    } else {
+      return res.status(400).json({
+        type: FAILURE,
+        message: "Failed to update cart",
         errors: [],
       });
     }

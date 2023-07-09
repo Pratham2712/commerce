@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { addToCartThunk, getAllCartThunk } from "../redux/slices/homeSlice";
+import React from "react";
+import { addToCartThunk, updateCartThunk } from "../redux/slices/homeSlice";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  Box,
   Button,
   Card,
   CardActions,
@@ -10,21 +11,17 @@ import {
   Typography,
 } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
+import AddBoxOutlinedIcon from "@mui/icons-material/AddBoxOutlined";
+import IndeterminateCheckBoxOutlinedIcon from "@mui/icons-material/IndeterminateCheckBoxOutlined";
 
 const ProductCard = ({ data, loginOpen, setLoginOpen }) => {
   const dispatch = useDispatch();
-  const [count, setCount] = useState([]);
   const isLogin = useSelector(
     (state) => state.rootReducer.UserInfoSlice.isLogin
   );
   const cartList = useSelector(
     (state) => state.rootReducer.homeSlice.data.cart.list
   );
-
-  const updateDone = useSelector(
-    (state) => state.rootReducer.homeSlice.updateDone
-  );
-
   const addToCart = (id) => {
     if (!isLogin) {
       return setLoginOpen(!loginOpen);
@@ -35,24 +32,33 @@ const ProductCard = ({ data, loginOpen, setLoginOpen }) => {
     dispatch(addToCartThunk(data));
   };
 
-  const arrayOfProductId = cartList?.list?.map((elm, idx) => {
-    return elm.product_id;
-  });
+  const updateCart = (type) => {
+    console.log(type);
+    const info = {
+      type: type,
+      product_id: data?._id,
+    };
+    dispatch(updateCartThunk(info));
+  };
+  // const arrayOfProductId = cartList?.list?.map((elm, idx) => {
+  //   return elm.product_id;
+  // });
 
-  const isCart = arrayOfProductId?.includes(data?._id);
+  // const isCart = arrayOfProductId?.includes(data?._id);
 
-  useEffect(() => {
-    for (let i = 0; i <= cartList?.list?.length; i++) {
-      console.log(val);
-      if (val?.product_id === data?._id) {
-        count[i] = { key: data?._id, value: val?.count };
-        setCount(updatedCount);
-      }
-    }
-  }, [updateDone]);
-
-  console.log(count);
-
+  // useEffect(() => {
+  //   if (cartList?.list) {
+  //     console.log("called");
+  //     for (const val of cartList?.list) {
+  //       if (val?.product_id === data?._id) {
+  //         //setIsCart(true);
+  //         setCount({ key: data?._id, value: val?.count });
+  //         break;
+  //       }
+  //     }
+  //   }
+  // }, [cartList, searchParams.get("page")]);
+  // console.log("count", count);
   return (
     <Card
       sx={{
@@ -106,12 +112,34 @@ const ProductCard = ({ data, loginOpen, setLoginOpen }) => {
           ₹{data?.price}
         </Typography>
         {}
-        {!isCart ? (
+        {!cartList[data?._id] ? (
           <Button variant="contained" onClick={() => addToCart(data?._id)}>
             Add to cart
           </Button>
         ) : (
-          <>Already Exist in user's cart</>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <IconButton
+              color="secondary"
+              aria-label="add an alarm"
+              onClick={() => updateCart("increment")}
+            >
+              <AddBoxOutlinedIcon />
+            </IconButton>{" "}
+            {cartList[data?._id]}
+            <IconButton
+              color="secondary"
+              aria-label="add an alarm"
+              onClick={() => updateCart("decrement")}
+            >
+              <IndeterminateCheckBoxOutlinedIcon />
+            </IconButton>{" "}
+          </Box>
         )}
       </CardActions>
     </Card>

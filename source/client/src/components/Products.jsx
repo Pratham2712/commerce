@@ -1,9 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
-import CardContent from "@mui/material/CardContent";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllCartThunk, getProductThunk } from "../redux/slices/homeSlice";
@@ -23,7 +18,6 @@ const Products = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const [loginOpen, setLoginOpen] = useState(false);
-  const [flag, setFlag] = useState(false);
 
   //useSelector
   const product = useSelector(
@@ -37,7 +31,7 @@ const Products = () => {
     (state) => state.rootReducer.homeSlice.updateDone
   );
   const cartList = useSelector(
-    (state) => state.rootReducer.homeSlice.data.cart.list
+    (state) => state.rootReducer.homeSlice.data.cart
   );
   //Function
   const pageParams = (page, pageSize) => {
@@ -66,7 +60,6 @@ const Products = () => {
     searchParams.get("type"),
     searchParams.get("subcategory"),
   ]);
-
   useEffect(() => {
     dispatch(getAllCartThunk());
   }, [updateDone, isLogin]);
@@ -79,7 +72,6 @@ const Products = () => {
             data={data}
             loginOpen={loginOpen}
             setLoginOpen={setLoginOpen}
-            flag={flag}
           />
         );
       })}
@@ -97,7 +89,7 @@ const Products = () => {
             onChange={(e, value) => {
               pageParams(parseInt(value), 4);
             }}
-            color="primary"
+            color="secondary"
             page={parseInt(searchParams.get("page"))}
           />
         </Stack>

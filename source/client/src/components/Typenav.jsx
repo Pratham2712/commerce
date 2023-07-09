@@ -54,15 +54,6 @@ const Typenav = () => {
     dispatch(getTypeCatThunk());
   }, []);
 
-  // useEffect(() => {
-  //   const data = {
-  //     type: searchParams.get("type"),
-  //     sub: searchParams.get("subcategory"),
-
-  //   };
-  //   dispatch(getProductThunk(data));
-  // }, [searchParams.get("type"), searchParams.get("subcategory")]);
-
   return (
     <Box
       sx={{ display: "flex", position: "relative" }}
@@ -91,12 +82,14 @@ const Typenav = () => {
         <Toolbar>
           <Breadcrumbs
             aria-label="breadcrumb"
-            sx={{ display: { color: "black " } }}
+            color="secondary"
+            sx={{ fontWeight: "600" }}
           >
             {navItems.map((item) => (
               <Button
                 key={item}
-                sx={{ color: "black" }}
+                color="secondary"
+                sx={{ fontWeight: "600" }}
                 value={item}
                 onMouseOver={(e) => {
                   //handleClose();

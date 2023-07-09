@@ -69,6 +69,19 @@ export const getAllCartThunk = createAsyncThunk(
     }
   }
 );
+
+export const updateCartThunk = createAsyncThunk(
+  "/home/updatecart",
+  async (data) => {
+    try {
+      const res = await axios.post(`${BASE_URL}/home/updatecart`, data);
+      return res.data;
+    } catch (error) {
+      return error.response.data;
+    }
+  }
+);
+
 const initialState = {
   loading: false,
   updateDone: false,
@@ -90,7 +103,7 @@ const initialState = {
     total: 0,
     productDetail: {},
     cart: {
-      list: [],
+      list: {},
       totalCart: 0,
     },
   },
@@ -100,6 +113,7 @@ const initialState = {
     getProductDetailThunk: IDLE,
     addToCartThunk: IDLE,
     getAllCartThunk: IDLE,
+    updateCartThunk: IDLE,
   },
 };
 
@@ -233,6 +247,8 @@ const homeSlice = createSlice({
             break;
           default:
             state.loading = false;
+            state.data.cart.list = [];
+            state.data.cart.totalCart = 0;
             state.errorData = {
               message: payload.message,
               type: payload.type,
@@ -243,6 +259,32 @@ const homeSlice = createSlice({
       })
       .addCase(getAllCartThunk.rejected, (state, action) => {
         state.status.getAllCartThunk = ERROR;
+        state.loading = false;
+        state.errorData.message = action.error.message;
+      })
+      //updateCartThunk======================================================================================================
+      .addCase(updateCartThunk.pending, (state, { payload }) => {
+        state.loading = true;
+      })
+      .addCase(updateCartThunk.fulfilled, (state, { payload }) => {
+        switch (payload.type) {
+          case SUCCESS:
+            state.loading = false;
+            state.updateDone = !state.updateDone;
+            state.status.updateCartThunk = FULFILLED;
+            break;
+          default:
+            state.loading = false;
+            state.errorData = {
+              message: payload.message,
+              type: payload.type,
+              errors: payload.errors,
+            };
+            break;
+        }
+      })
+      .addCase(updateCartThunk.rejected, (state, action) => {
+        state.status.updateCartThunk = ERROR;
         state.loading = false;
         state.errorData.message = action.error.message;
       });
