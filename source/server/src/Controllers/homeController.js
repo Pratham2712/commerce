@@ -1,9 +1,11 @@
 import {
+  addWishlistService,
   addtocartService,
   getAllCartService,
   getProductDetailService,
   getProductService,
   getTypeCatService,
+  getWishlistService,
   updateCartService,
 } from "../service/homeService.js";
 import { FAILURE, SUCCESS } from "../constants/constants.js";
@@ -157,6 +159,53 @@ export const updateCartController = async (req, res, next) => {
       return res.status(400).json({
         type: FAILURE,
         message: "Failed to update cart",
+        errors: [],
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+export const addWishlistController = async (req, res, next) => {
+  try {
+    const data = {
+      userId: req.body?._id,
+      product_id: req.body?.product_id,
+    };
+    const result = await addWishlistService(data);
+    if (result) {
+      return res.status(200).json({
+        type: SUCCESS,
+        message: "Update wish successfully",
+        data: result,
+      });
+    } else {
+      return res.status(400).json({
+        type: FAILURE,
+        message: "Failed to update wish",
+        errors: [],
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+export const getWishlistController = async (req, res, next) => {
+  try {
+    const data = {
+      userId: req.body?._id,
+    };
+    const result = await getWishlistService(data);
+    if (result) {
+      return res.status(200).json({
+        type: SUCCESS,
+        message: "Fetch wishlist successfully",
+        data: result,
+      });
+    } else {
+      return res.status(400).json({
+        type: FAILURE,
+        message: "Failed to fetch wishlist",
         errors: [],
       });
     }

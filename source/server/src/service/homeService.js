@@ -1,6 +1,7 @@
 import cartModel from "../Models/cartModel.js";
 import categoryModel from "../Models/categoryModel.js";
 import productModel from "../Models/productModel.js";
+import wishlistModel from "../Models/wishlistModel.js";
 
 export const getTypeCatService = async (data) => {
   // const res = await categoryModel.find();
@@ -130,4 +131,28 @@ export const updateCartService = async (data) => {
     return cart;
   }
   return;
+};
+
+export const addWishlistService = async (data) => {
+  const wish = await wishlistModel.findOne({ userId: data?.userId });
+  if (wish) {
+    const list = wish.list;
+    if (list.get(data?.product_id)) {
+      list.set(data?.product_id, 0);
+    } else {
+      list.set(data?.product_id, 1);
+    }
+    return await wish.save();
+  } else {
+    const newWishlist = new wishlistModel({
+      userId: data?.userId,
+      list: { [data?.product_id]: 1 },
+    });
+    return await newWishlist.save();
+  }
+};
+
+export const getWishlistService = async (data) => {
+  const wish = await wishlistModel.findOne({ userId: data?.userId });
+  return wish;
 };

@@ -317,7 +317,11 @@ const Login = ({ loginOpen, setLoginOpen }) => {
           >
             <Link
               underline="hover"
-              sx={{ paddingLeft: "1rem", cursor: "pointer" }}
+              sx={{
+                paddingLeft: "1rem",
+                cursor: "pointer",
+                fontSize: "0.9rem",
+              }}
               onClick={() => {
                 setSignup(true);
                 setLoginOpen(false);

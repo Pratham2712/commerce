@@ -81,10 +81,34 @@ export const updateCartThunk = createAsyncThunk(
     }
   }
 );
+export const addWishlistThunk = createAsyncThunk(
+  "/home/addwishlist",
+  async (data) => {
+    try {
+      const res = await axios.post(`${BASE_URL}/home/addwishlist`, data);
+      return res.data;
+    } catch (error) {
+      return error.response.data;
+    }
+  }
+);
+
+export const getWishlistThunk = createAsyncThunk(
+  "/home/getwishlist",
+  async () => {
+    try {
+      const res = await axios.get(`${BASE_URL}/home/getwishlist`);
+      return res.data;
+    } catch (error) {
+      return error.response.data;
+    }
+  }
+);
 
 const initialState = {
   loading: false,
   updateDone: false,
+  wishUpdate: false,
   errorData: {
     message: "",
     type: "",
@@ -106,6 +130,7 @@ const initialState = {
       list: {},
       totalCart: 0,
     },
+    wishlist: {},
   },
   status: {
     getTypeCatThunk: IDLE,
@@ -114,6 +139,8 @@ const initialState = {
     addToCartThunk: IDLE,
     getAllCartThunk: IDLE,
     updateCartThunk: IDLE,
+    addWishlistThunk: IDLE,
+    getWishlistThunk: IDLE,
   },
 };
 
@@ -285,6 +312,58 @@ const homeSlice = createSlice({
       })
       .addCase(updateCartThunk.rejected, (state, action) => {
         state.status.updateCartThunk = ERROR;
+        state.loading = false;
+        state.errorData.message = action.error.message;
+      })
+      //addWishlistThunk======================================================================================================
+      .addCase(addWishlistThunk.pending, (state, { payload }) => {
+        state.loading = true;
+      })
+      .addCase(addWishlistThunk.fulfilled, (state, { payload }) => {
+        switch (payload.type) {
+          case SUCCESS:
+            state.loading = false;
+            state.wishUpdate = !state.wishUpdate;
+            state.status.addWishlistThunk = FULFILLED;
+            break;
+          default:
+            state.loading = false;
+            state.errorData = {
+              message: payload.message,
+              type: payload.type,
+              errors: payload.errors,
+            };
+            break;
+        }
+      })
+      .addCase(addWishlistThunk.rejected, (state, action) => {
+        state.status.addWishlistThunk = ERROR;
+        state.loading = false;
+        state.errorData.message = action.error.message;
+      })
+      //getWishlistThunk======================================================================================================
+      .addCase(getWishlistThunk.pending, (state, { payload }) => {
+        state.loading = true;
+      })
+      .addCase(getWishlistThunk.fulfilled, (state, { payload }) => {
+        switch (payload.type) {
+          case SUCCESS:
+            state.loading = false;
+            state.data.wishlist = payload.data;
+            state.status.getWishlistThunk = FULFILLED;
+            break;
+          default:
+            state.loading = false;
+            state.errorData = {
+              message: payload.message,
+              type: payload.type,
+              errors: payload.errors,
+            };
+            break;
+        }
+      })
+      .addCase(getWishlistThunk.rejected, (state, action) => {
+        state.status.getWishlistThunk = ERROR;
         state.loading = false;
         state.errorData.message = action.error.message;
       });

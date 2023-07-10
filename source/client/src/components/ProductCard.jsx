@@ -1,5 +1,9 @@
 import React from "react";
-import { addToCartThunk, updateCartThunk } from "../redux/slices/homeSlice";
+import {
+  addToCartThunk,
+  addWishlistThunk,
+  updateCartThunk,
+} from "../redux/slices/homeSlice";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Box,
@@ -8,6 +12,7 @@ import {
   CardActions,
   CardContent,
   IconButton,
+  Skeleton,
   Typography,
 } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
@@ -22,6 +27,11 @@ const ProductCard = ({ data, loginOpen, setLoginOpen }) => {
   const cartList = useSelector(
     (state) => state.rootReducer.homeSlice.data.cart.list
   );
+  const wish = useSelector(
+    (state) => state.rootReducer.homeSlice.data.wishlist
+  );
+  console.log(wish?.list);
+  const loading = useSelector((state) => state.rootReducer.homeSlice.loading);
   const addToCart = (id) => {
     if (!isLogin) {
       return setLoginOpen(!loginOpen);
@@ -33,12 +43,18 @@ const ProductCard = ({ data, loginOpen, setLoginOpen }) => {
   };
 
   const updateCart = (type) => {
-    console.log(type);
     const info = {
       type: type,
       product_id: data?._id,
     };
     dispatch(updateCartThunk(info));
+  };
+
+  const addWishlist = (id) => {
+    const data = {
+      product_id: id,
+    };
+    dispatch(addWishlistThunk(data));
   };
   // const arrayOfProductId = cartList?.list?.map((elm, idx) => {
   //   return elm.product_id;
@@ -77,71 +93,88 @@ const ProductCard = ({ data, loginOpen, setLoginOpen }) => {
       //   navigate(product_page(data?._id));
       // }}
     >
-      <img
-        src={data?.image?.[0]}
-        alt=""
-        style={{
-          maxHeight: "200px",
-          width: "100%",
-          objectFit: "contain",
-        }}
-      />
-      <CardContent>
-        <Typography
-          gutterBottom
-          sx={{ lineHeight: 1.1, fontSize: "1rem", height: "1rem" }}
-        >
-          {data?.title?.slice(0, 25)}...
-        </Typography>
-      </CardContent>
-      <CardActions
-        sx={{
-          padding: " 0.5rem 1rem",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <IconButton
-          aria-label="add to favorites"
-          sx={{ position: "absolute", top: 5, left: 2 }}
-        >
-          <FavoriteIcon />
-        </IconButton>
-        <Typography variant="h6" sx={{ fontSize: "1rem", fontWeight: "bold" }}>
-          ₹{data?.price}
-        </Typography>
-        {}
-        {!cartList[data?._id] ? (
-          <Button variant="contained" onClick={() => addToCart(data?._id)}>
-            Add to cart
-          </Button>
-        ) : (
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
+      {loading ? (
+        <Skeleton width={233} height={200} />
+      ) : (
+        <img
+          src={data?.image?.[0]}
+          alt=""
+          style={{
+            maxHeight: "200px",
+            width: "100%",
+            objectFit: "contain",
+          }}
+        />
+      )}
+      {loading ? (
+        <Skeleton width={234} height={54} />
+      ) : (
+        <CardContent>
+          <Typography
+            gutterBottom
+            sx={{ lineHeight: 1.1, fontSize: "1rem", height: "1rem" }}
           >
-            <IconButton
-              color="secondary"
-              aria-label="add an alarm"
-              onClick={() => updateCart("increment")}
+            {data?.title?.slice(0, 25)}...
+          </Typography>
+        </CardContent>
+      )}
+      {loading ? (
+        <Skeleton width={234} height={52.5} />
+      ) : (
+        <CardActions
+          sx={{
+            padding: " 0.5rem 1rem",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <IconButton
+            aria-label="add to favorites"
+            color={wish?.list[data?._id] === 1 ? "secondary" : "default"}
+            sx={{ position: "absolute", top: 5, left: 2 }}
+            onClick={() => addWishlist(data?._id)}
+          >
+            <FavoriteIcon />
+          </IconButton>
+          <Typography
+            variant="h6"
+            sx={{ fontSize: "1rem", fontWeight: "bold" }}
+          >
+            ₹{data?.price}
+          </Typography>
+          {}
+          {!cartList[data?._id] ? (
+            <Button variant="contained" onClick={() => addToCart(data?._id)}>
+              Add to cart
+            </Button>
+          ) : (
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
             >
-              <AddBoxOutlinedIcon />
-            </IconButton>{" "}
-            {cartList[data?._id]}
-            <IconButton
-              color="secondary"
-              aria-label="add an alarm"
-              onClick={() => updateCart("decrement")}
-            >
-              <IndeterminateCheckBoxOutlinedIcon />
-            </IconButton>{" "}
-          </Box>
-        )}
-      </CardActions>
+              <IconButton
+                color="secondary"
+                aria-label="add an alarm"
+                onClick={() => updateCart("increment")}
+              >
+                <AddBoxOutlinedIcon />
+              </IconButton>{" "}
+              {cartList[data?._id]}
+              <IconButton
+                color="secondary"
+                aria-label="add an alarm"
+                onClick={() => updateCart("decrement")}
+              >
+                <IndeterminateCheckBoxOutlinedIcon />
+              </IconButton>{" "}
+            </Box>
+          )}
+        </CardActions>
+      )}
     </Card>
   );
 };

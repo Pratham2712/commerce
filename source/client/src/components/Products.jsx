@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllCartThunk, getProductThunk } from "../redux/slices/homeSlice";
+import {
+  getAllCartThunk,
+  getProductThunk,
+  getWishlistThunk,
+} from "../redux/slices/homeSlice";
 
 import { Pagination, Stack } from "@mui/material";
 import {
@@ -30,8 +34,8 @@ const Products = () => {
   const updateDone = useSelector(
     (state) => state.rootReducer.homeSlice.updateDone
   );
-  const cartList = useSelector(
-    (state) => state.rootReducer.homeSlice.data.cart
+  const wishUpdate = useSelector(
+    (state) => state.rootReducer.homeSlice.wishUpdate
   );
   //Function
   const pageParams = (page, pageSize) => {
@@ -63,6 +67,10 @@ const Products = () => {
   useEffect(() => {
     dispatch(getAllCartThunk());
   }, [updateDone, isLogin]);
+
+  useEffect(() => {
+    dispatch(getWishlistThunk());
+  }, [wishUpdate, isLogin]);
 
   return (
     <Box sx={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
