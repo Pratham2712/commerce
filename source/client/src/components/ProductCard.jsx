@@ -18,9 +18,12 @@ import {
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import AddBoxOutlinedIcon from "@mui/icons-material/AddBoxOutlined";
 import IndeterminateCheckBoxOutlinedIcon from "@mui/icons-material/IndeterminateCheckBoxOutlined";
+import { product_page } from "../constants/links";
+import { useNavigate } from "react-router-dom";
 
 const ProductCard = ({ data, loginOpen, setLoginOpen }) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const isLogin = useSelector(
     (state) => state.rootReducer.UserInfoSlice.isLogin
   );
@@ -30,9 +33,9 @@ const ProductCard = ({ data, loginOpen, setLoginOpen }) => {
   const wish = useSelector(
     (state) => state.rootReducer.homeSlice.data.wishlist
   );
-  console.log(wish?.list);
   const loading = useSelector((state) => state.rootReducer.homeSlice.loading);
-  const addToCart = (id) => {
+  const addToCart = (e, id) => {
+    e.stopPropagation();
     if (!isLogin) {
       return setLoginOpen(!loginOpen);
     }
@@ -42,7 +45,9 @@ const ProductCard = ({ data, loginOpen, setLoginOpen }) => {
     dispatch(addToCartThunk(data));
   };
 
-  const updateCart = (type) => {
+  const updateCart = (e, type) => {
+    e.stopPropagation();
+
     const info = {
       type: type,
       product_id: data?._id,
@@ -50,31 +55,17 @@ const ProductCard = ({ data, loginOpen, setLoginOpen }) => {
     dispatch(updateCartThunk(info));
   };
 
-  const addWishlist = (id) => {
+  const addWishlist = (e, id) => {
+    e.stopPropagation();
+    if (!isLogin) {
+      return;
+    }
+
     const data = {
       product_id: id,
     };
     dispatch(addWishlistThunk(data));
   };
-  // const arrayOfProductId = cartList?.list?.map((elm, idx) => {
-  //   return elm.product_id;
-  // });
-
-  // const isCart = arrayOfProductId?.includes(data?._id);
-
-  // useEffect(() => {
-  //   if (cartList?.list) {
-  //     console.log("called");
-  //     for (const val of cartList?.list) {
-  //       if (val?.product_id === data?._id) {
-  //         //setIsCart(true);
-  //         setCount({ key: data?._id, value: val?.count });
-  //         break;
-  //       }
-  //     }
-  //   }
-  // }, [cartList, searchParams.get("page")]);
-  // console.log("count", count);
   return (
     <Card
       sx={{
@@ -89,9 +80,10 @@ const ProductCard = ({ data, loginOpen, setLoginOpen }) => {
         position: "relative",
         cursor: "pointer",
       }}
-      // onClick={() => {
-      //   navigate(product_page(data?._id));
-      // }}
+      onClick={(e) => {
+        e.stopPropagation();
+        navigate(product_page(data?._id));
+      }}
     >
       {loading ? (
         <Skeleton width={233} height={200} />
@@ -131,9 +123,9 @@ const ProductCard = ({ data, loginOpen, setLoginOpen }) => {
         >
           <IconButton
             aria-label="add to favorites"
-            color={wish?.list[data?._id] === 1 ? "secondary" : "default"}
+            color={wish?.list?.[data?._id] === 1 ? "secondary" : "default"}
             sx={{ position: "absolute", top: 5, left: 2 }}
-            onClick={() => addWishlist(data?._id)}
+            onClick={(e) => addWishlist(e, data?._id)}
           >
             <FavoriteIcon />
           </IconButton>
@@ -145,7 +137,10 @@ const ProductCard = ({ data, loginOpen, setLoginOpen }) => {
           </Typography>
           {}
           {!cartList[data?._id] ? (
-            <Button variant="contained" onClick={() => addToCart(data?._id)}>
+            <Button
+              variant="contained"
+              onClick={(e) => addToCart(e, data?._id)}
+            >
               Add to cart
             </Button>
           ) : (
@@ -159,7 +154,7 @@ const ProductCard = ({ data, loginOpen, setLoginOpen }) => {
               <IconButton
                 color="secondary"
                 aria-label="add an alarm"
-                onClick={() => updateCart("increment")}
+                onClick={(e) => updateCart(e, "increment")}
               >
                 <AddBoxOutlinedIcon />
               </IconButton>{" "}
@@ -167,7 +162,7 @@ const ProductCard = ({ data, loginOpen, setLoginOpen }) => {
               <IconButton
                 color="secondary"
                 aria-label="add an alarm"
-                onClick={() => updateCart("decrement")}
+                onClick={(e) => updateCart(e, "decrement")}
               >
                 <IndeterminateCheckBoxOutlinedIcon />
               </IconButton>{" "}

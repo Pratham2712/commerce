@@ -353,6 +353,7 @@ const homeSlice = createSlice({
             state.status.getWishlistThunk = FULFILLED;
             break;
           default:
+            state.data.wishlist = {};
             state.loading = false;
             state.errorData = {
               message: payload.message,

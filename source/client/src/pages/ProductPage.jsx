@@ -1,7 +1,14 @@
-import { Box, Button, Chip, Typography } from "@mui/material";
+import { Box, Button, Chip, IconButton, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getProductDetailThunk } from "../redux/slices/homeSlice.js";
+import {
+  addToCartThunk,
+  addWishlistThunk,
+  getAllCartThunk,
+  getProductDetailThunk,
+  getWishlistThunk,
+  updateCartThunk,
+} from "../redux/slices/homeSlice.js";
 import { useDispatch, useSelector } from "react-redux";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { useTheme } from "@mui/material/styles";
@@ -14,6 +21,8 @@ import {
   Thumbs,
   FreeMode,
 } from "swiper/modules";
+import AddBoxOutlinedIcon from "@mui/icons-material/AddBoxOutlined";
+import IndeterminateCheckBoxOutlinedIcon from "@mui/icons-material/IndeterminateCheckBoxOutlined";
 
 // Import Swiper styles
 import "swiper/css";
@@ -28,9 +37,54 @@ const ProductPage = () => {
   const dispatch = useDispatch();
   const theme = useTheme();
   //useSelector
+  const wishUpdate = useSelector(
+    (state) => state.rootReducer.homeSlice.wishUpdate
+  );
+  const wish = useSelector(
+    (state) => state.rootReducer.homeSlice.data.wishlist
+  );
+  const updateDone = useSelector(
+    (state) => state.rootReducer.homeSlice.updateDone
+  );
+  const isLogin = useSelector(
+    (state) => state.rootReducer.UserInfoSlice.isLogin
+  );
   const product = useSelector(
     (state) => state.rootReducer.homeSlice.data.productDetail
   );
+  const cartList = useSelector(
+    (state) => state.rootReducer.homeSlice.data.cart.list
+  );
+  //function
+  const addToCart = (e, id) => {
+    e.stopPropagation();
+    if (!isLogin) {
+      return;
+    }
+    const data = {
+      product_id: id,
+    };
+    dispatch(addToCartThunk(data));
+  };
+
+  const updateCart = (e, type) => {
+    e.stopPropagation();
+    const info = {
+      type: type,
+      product_id: id,
+    };
+    dispatch(updateCartThunk(info));
+  };
+
+  const addWishlist = (id) => {
+    if (!isLogin) {
+      return;
+    }
+    const data = {
+      product_id: id,
+    };
+    dispatch(addWishlistThunk(data));
+  };
   //useEffect
   useEffect(() => {
     const data = {
@@ -38,6 +92,13 @@ const ProductPage = () => {
     };
     dispatch(getProductDetailThunk(data));
   }, []);
+  useEffect(() => {
+    dispatch(getAllCartThunk());
+  }, [updateDone, isLogin]);
+
+  useEffect(() => {
+    dispatch(getWishlistThunk());
+  }, [wishUpdate, isLogin]);
   return (
     <Box
       sx={{
@@ -228,10 +289,49 @@ const ProductPage = () => {
               width: "100%",
             }}
           >
-            <Button variant="contained" sx={{ marginRight: "2rem" }}>
-              Add to cart
+            {!cartList[id] ? (
+              <Button
+                variant="contained"
+                sx={{ marginRight: "2rem" }}
+                onClick={(e) => addToCart(e, id)}
+              >
+                Add to cart
+              </Button>
+            ) : (
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <IconButton
+                  color="secondary"
+                  aria-label="add an alarm"
+                  onClick={(e) => updateCart(e, "increment")}
+                >
+                  <AddBoxOutlinedIcon sx={{ fontSize: "2rem" }} />
+                </IconButton>{" "}
+                {cartList[id]}
+                <IconButton
+                  color="secondary"
+                  aria-label="add an alarm"
+                  onClick={(e) => updateCart(e, "decrement")}
+                >
+                  <IndeterminateCheckBoxOutlinedIcon
+                    sx={{ fontSize: "2rem", marginRight: "2rem" }}
+                  />
+                </IconButton>{" "}
+              </Box>
+            )}
+            <Button
+              variant={wish?.list?.[id] === 1 ? "contained" : "outlined"}
+              onClick={() => addWishlist(id)}
+            >
+              {wish?.list?.[id] === 1
+                ? "Remove from wishlist"
+                : "save to wishlist"}
             </Button>
-            <Button variant="outlined">Add to wishlist</Button>
           </div>
           <div>{product?.description}</div>
         </Box>

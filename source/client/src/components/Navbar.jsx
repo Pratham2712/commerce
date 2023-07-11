@@ -21,6 +21,8 @@ import {
   checkUserLoginThunk,
   logoutThunk,
 } from "../redux/slices/UserInfoSlice";
+import { User_Cart } from "../constants/links";
+import { NavLink } from "react-router-dom";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -150,7 +152,7 @@ const Navbar = () => {
     >
       <MenuItem>
         <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-          <Badge badgeContent={4} color="error">
+          <Badge badgeContent={totalCart} color="error">
             <ShoppingCartIcon />
           </Badge>
         </IconButton>
@@ -216,15 +218,26 @@ const Navbar = () => {
             </Box>
             <Box sx={{ flexGrow: 0.13 }} />
             <Box sx={{ display: { xs: "none", md: "flex" } }}>
-              <IconButton
-                size="large"
-                aria-label="show 4 new mails"
-                color="inherit"
+              <NavLink
+                to={User_Cart}
+                style={{
+                  width: "100%",
+                  textDecoration: "none",
+                  color: "inherit",
+                }}
               >
-                <Badge badgeContent={totalCart} color="error">
-                  <ShoppingCartIcon />
-                </Badge>
-              </IconButton>
+                {({ isActive, isPending }) => (
+                  <IconButton
+                    size="large"
+                    aria-label="show 4 new mails"
+                    color="inherit"
+                  >
+                    <Badge badgeContent={totalCart} color="error">
+                      <ShoppingCartIcon />
+                    </Badge>
+                  </IconButton>
+                )}
+              </NavLink>
             </Box>
             <Box sx={{ flexGrow: 0.13 }} />
             <Box sx={{ display: { xs: "none", md: "flex" } }}>
@@ -233,7 +246,7 @@ const Navbar = () => {
                 edge="end"
                 aria-label="account of current user"
                 aria-controls={menuId}
-                aria-haspopup="true"
+                ari44a-haspopup="true"
                 onClick={handleProfileMenuOpen}
                 color="inherit"
               >

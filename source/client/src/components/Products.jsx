@@ -13,14 +13,12 @@ import {
   useNavigate,
   useSearchParams,
 } from "react-router-dom";
-import { product_page } from "../constants/links";
 import Login from "../pages/Login";
 import ProductCard from "./ProductCard";
 
 const Products = () => {
   const dispatch = useDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
-  const navigate = useNavigate();
   const [loginOpen, setLoginOpen] = useState(false);
 
   //useSelector
