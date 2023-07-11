@@ -1,16 +1,21 @@
-import { Box, Grid, Typography } from "@mui/material";
+import { Box, Grid, Typography, formControlLabelClasses } from "@mui/material";
 import React, { useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { getCartPageThunk } from "../redux/slices/cartSlice";
 
 const Cart = () => {
+  const dispatch = useDispatch();
   //useSelector
   const isLogin = useSelector(
     (state) => state.rootReducer.UserInfoSlice.isLogin
   );
+  const cart = useSelector((state) => state.rootReducer.cartSlice.data.cart);
   useEffect(() => {
-    if (isLogin) {
-    }
-  }, []);
+    // if (!isLogin) {
+    //   return;
+    // }
+    dispatch(getCartPageThunk()).then((data) => console.log(data.payload));
+  }, [isLogin]);
   return (
     <Box
       sx={{
@@ -28,9 +33,6 @@ const Cart = () => {
         <Grid container spacing={0} sx={{ width: "100%" }}>
           <Grid lg={9}>
             <Box></Box>
-            <Box>cart</Box>
-            <Box>cart</Box>
-            <Box>cart</Box>
           </Grid>
           <Grid lg={3}>
             <Box>order details</Box>

@@ -57,10 +57,6 @@ const ProductCard = ({ data, loginOpen, setLoginOpen }) => {
 
   const addWishlist = (e, id) => {
     e.stopPropagation();
-    if (!isLogin) {
-      return;
-    }
-
     const data = {
       product_id: id,
     };

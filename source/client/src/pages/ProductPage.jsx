@@ -58,9 +58,6 @@ const ProductPage = () => {
   //function
   const addToCart = (e, id) => {
     e.stopPropagation();
-    if (!isLogin) {
-      return;
-    }
     const data = {
       product_id: id,
     };
@@ -77,9 +74,6 @@ const ProductPage = () => {
   };
 
   const addWishlist = (id) => {
-    if (!isLogin) {
-      return;
-    }
     const data = {
       product_id: id,
     };

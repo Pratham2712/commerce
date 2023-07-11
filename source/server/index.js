@@ -7,6 +7,7 @@ import { authRouter } from "./src/Routes/authRouter.js";
 import { verifyToken } from "./src/middlewares/jwtMiddlewares.js";
 import { homeRouter } from "./src/Routes/homeRouter.js";
 import { adminRouter } from "./src/Routes/adminRouter.js";
+import { cartRouter } from "./src/Routes/cartRouter.js";
 
 dotenv.config();
 
@@ -36,6 +37,7 @@ app.get("/", (req, res) => {
 app.use("/auth", authRouter);
 app.use("/home", homeRouter);
 app.use("/admin", adminRouter);
+app.use("/cart", verifyToken, cartRouter);
 app.listen(8000, () => {
   console.log("Listening on port 8000");
 });
