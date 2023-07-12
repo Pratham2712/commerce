@@ -21,8 +21,8 @@ import {
   checkUserLoginThunk,
   logoutThunk,
 } from "../redux/slices/UserInfoSlice";
-import { User_Cart } from "../constants/links";
-import { NavLink } from "react-router-dom";
+import { User_Cart, User_Home } from "../constants/links";
+import { Link, NavLink } from "react-router-dom";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -192,9 +192,16 @@ const Navbar = () => {
               variant="h6"
               noWrap
               component="div"
-              sx={{ display: { xs: "none", sm: "block" }, fontWeight: "bold" }}
+              sx={{
+                display: { xs: "none", sm: "block" },
+                fontWeight: "bold",
+                cursor: "pointer",
+                textDecoration: "none",
+              }}
             >
-              Fashion
+              <Link to={User_Home} style={{ textDecoration: "none" }}>
+                Fashion
+              </Link>
             </Typography>
             <Box sx={{ flexGrow: 0.13 }} />
             <Search>

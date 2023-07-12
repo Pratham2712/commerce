@@ -7,3 +7,9 @@
 .mySwiper .swiper-slide-thumb-active {
   opacity: 1;
 }
+
+@media only screen and (max-width: 599px) {
+  .cart-img {
+    width: 150px;
+  }
+}
