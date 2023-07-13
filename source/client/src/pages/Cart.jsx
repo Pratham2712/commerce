@@ -17,7 +17,6 @@ import { useTheme } from "@mui/material";
 
 const Cart = () => {
   const dispatch = useDispatch();
-  const [total, setTotal] = useState(0);
   const [page, setPage] = useState(0);
   const theme = useTheme();
   const steps = ["Checkout cart", "Delivery details", "Payment"];
@@ -28,23 +27,25 @@ const Cart = () => {
   const updateDone = useSelector(
     (state) => state.rootReducer.homeSlice.updateDone
   );
-  const cartList = useSelector(
-    (state) => state.rootReducer.homeSlice.data.cart.list
-  );
+
   const cart = useSelector((state) => state.rootReducer.cartSlice.data.cart);
+  const totalPrice = useSelector(
+    (state) => state.rootReducer.cartSlice.data.totalPrice
+  );
   const updateDoneCart = useSelector(
     (state) => state.rootReducer.cartSlice.updateDone
   );
 
-  console.log(cart);
+  //function
+  const nextPageDetails = () => {
+    setPage(1);
+  };
 
   useEffect(() => {
     dispatch(getCartPageThunk());
-  }, [isLogin, updateDoneCart]);
-
-  useEffect(() => {
     dispatch(getAllCartThunk());
-  }, [updateDone, isLogin, updateDoneCart]);
+  }, [isLogin, updateDoneCart, updateDone]);
+
   return (
     <>
       <Box
@@ -89,8 +90,7 @@ const Cart = () => {
               <Grid container spacing={0} sx={{ justifyContent: "center" }}>
                 <Grid lg={8} md={9} sm={10} sx={{ width: "100%" }}>
                   {cart?.map((data) => {
-                    return;
-                    //<CartComponent data={data} />;
+                    return <CartComponent data={data} />;
                   })}
                 </Grid>
                 <Grid lg={4} md={5}>
@@ -130,16 +130,14 @@ const Cart = () => {
                             <Typography
                               sx={{ fontSize: "0.8rem", width: "70%" }}
                             >
-                              {data?.product_id?.title}
+                              {data?.product?.title}
                             </Typography>
 
                             <Typography sx={{ fontSize: "0.8rem" }}>
-                              x{cartList[data?.product_id?._id]}
+                              x{data?.count}
                             </Typography>
                             <Typography sx={{ fontSize: "0.8rem" }}>
-                              ₹
-                              {data?.product_id?.price *
-                                cartList[data?.product_id?._id]}
+                              ₹{data?.product?.price * data?.count}
                             </Typography>
                           </div>
                         );
@@ -152,7 +150,7 @@ const Cart = () => {
                         }}
                       >
                         <Typography>Cart Total </Typography>
-                        <Typography>{total}</Typography>
+                        <Typography>{totalPrice}</Typography>
                       </div>
                     </Box>
                     <div
@@ -169,6 +167,7 @@ const Cart = () => {
                         }}
                         variant="contained"
                         color="secondary"
+                        onClick={() => nextPageDetails()}
                       >
                         proceed to shipping
                       </Button>

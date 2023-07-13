@@ -58,6 +58,7 @@ const initialState = {
   isError: false,
   data: {
     cart: [],
+    totalPrice: 0,
   },
   status: {
     getCartPageThunk: IDLE,
@@ -85,6 +86,7 @@ const cartSlice = createSlice({
           case SUCCESS:
             state.loading = false;
             state.data.cart = payload.data;
+            state.data.totalPrice = payload.totalPrice;
             state.status.getCartPageThunk = FULFILLED;
             break;
           default:

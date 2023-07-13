@@ -31,18 +31,18 @@ export const getCartpageService = async (data) => {
         from: "products",
         localField: "list.product_id",
         foreignField: "_id",
-        as: "product",
+        as: "list.product",
       },
     },
     {
-      $unwind: "$product",
+      $unwind: "$list.product",
     },
     {
       $group: {
         _id: null,
         total: {
           $sum: {
-            $multiply: ["$product.price", "$list.count"],
+            $multiply: ["$list.product.price", "$list.count"],
           },
         },
         list: {
@@ -60,8 +60,7 @@ export const getCartpageService = async (data) => {
   ];
   const result = await cartModel.aggregate(pipeline).exec();
   const total = result.length > 0 ? result[0].total : 0;
-  console.log({ total: total, result: result });
-  return { total: total, result: result };
+  return result;
 };
 
 export const deletCartService = async (data) => {

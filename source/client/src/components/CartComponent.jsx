@@ -34,7 +34,7 @@ const CartComponent = ({ data }) => {
   };
   const handleChange = (event) => {
     const info = {
-      product_id: data?.product_id?._id,
+      product_id: data?.product?._id,
       size: event.target.value,
     };
     dispatch(updateSizeThunk(info));
@@ -42,7 +42,7 @@ const CartComponent = ({ data }) => {
   };
   const deleteCart = () => {
     const info = {
-      product_id: data?.product_id?._id,
+      product_id: data?.product?._id,
     };
     dispatch(deleteCartThunk(info));
   };
@@ -55,6 +55,12 @@ const CartComponent = ({ data }) => {
         marginTop: "1rem",
         border: "solid 1px grey",
         padding: "0rem 1rem",
+        [theme.breakpoints.down("xl")]: {
+          height: "9rem",
+        },
+        [theme.breakpoints.down("lg")]: {
+          height: "8rem",
+        },
         [theme.breakpoints.down("sm")]: {
           height: "8rem",
         },
@@ -62,7 +68,7 @@ const CartComponent = ({ data }) => {
     >
       <img
         className="cart-img"
-        src={data?.product_id?.image?.[0]}
+        src={data?.product?.image?.[0]}
         alt=""
         style={{
           height: "100%",
@@ -89,7 +95,7 @@ const CartComponent = ({ data }) => {
             },
           }}
         >
-          {data?.product_id?.title.slice(0, 20)}...
+          {data?.product?.title.slice(0, 20)}...
         </Typography>
         <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
           <InputLabel id="demo-simple-select-standard-label">
@@ -102,7 +108,7 @@ const CartComponent = ({ data }) => {
             onChange={(e) => handleChange(e)}
             label="Select size"
           >
-            {data?.product_id?.size?.map((ele) => {
+            {data?.product?.size?.map((ele) => {
               return <MenuItem value={ele}>{ele}</MenuItem>;
             })}
           </Select>
@@ -117,15 +123,15 @@ const CartComponent = ({ data }) => {
           <IconButton
             color="secondary"
             aria-label="add an alarm"
-            onClick={(e) => updateCart(e, "increment", data?.product_id?._id)}
+            onClick={(e) => updateCart(e, "increment", data?.product?._id)}
           >
             <AddBoxOutlinedIcon />
           </IconButton>{" "}
-          {cartList[data?.product_id?._id]}
+          {data?.count}
           <IconButton
             color="secondary"
             aria-label="add an alarm"
-            onClick={(e) => updateCart(e, "decrement", data?.product_id?._id)}
+            onClick={(e) => updateCart(e, "decrement", data?.product?._id)}
           >
             <IndeterminateCheckBoxOutlinedIcon />
           </IconButton>{" "}
@@ -146,7 +152,7 @@ const CartComponent = ({ data }) => {
             },
           }}
         >
-          Rs.{data?.product_id?.price}
+          Rs.{data?.product?.price}
         </Typography>
         <Typography
           color="primary"

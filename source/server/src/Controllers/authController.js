@@ -45,7 +45,7 @@ export const loginController = async (req, res, next) => {
       const token = {
         _id: result._id,
       };
-      const jwtToken = await jwt.sign(token, process.env.JWT_SECRET);
+      const jwtToken = await jwt.sign(token, "secret");
       return res
         .status(200)
         .cookie("USER_TOKEN", jwtToken, {
@@ -107,7 +107,7 @@ export const signupController = async (req, res, next) => {
         const token = {
           _id: user[0]._id,
         };
-        const jwtToken = await jwt.sign(token, process.env.JWT_SECRET);
+        const jwtToken = await jwt.sign(token, "secret");
         return res
           .status(200)
           .cookie("USER_TOKEN", jwtToken, {
