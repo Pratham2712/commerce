@@ -13,6 +13,7 @@ import IndeterminateCheckBoxOutlinedIcon from "@mui/icons-material/Indeterminate
 import { updateCartThunk } from "../redux/slices/homeSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useTheme } from "@mui/material";
+import { deleteCartThunk, updateSizeThunk } from "../redux/slices/cartSlice";
 const CartComponent = ({ data }) => {
   const [size, setSize] = React.useState("");
   const dispatch = useDispatch();
@@ -32,7 +33,18 @@ const CartComponent = ({ data }) => {
     dispatch(updateCartThunk(info));
   };
   const handleChange = (event) => {
+    const info = {
+      product_id: data?.product_id?._id,
+      size: event.target.value,
+    };
+    dispatch(updateSizeThunk(info));
     setSize(event.target.value);
+  };
+  const deleteCart = () => {
+    const info = {
+      product_id: data?.product_id?._id,
+    };
+    dispatch(deleteCartThunk(info));
   };
   return (
     <Box
@@ -46,7 +58,6 @@ const CartComponent = ({ data }) => {
         [theme.breakpoints.down("sm")]: {
           height: "8rem",
         },
-        // width: "90%",
       }}
     >
       <img
@@ -87,8 +98,8 @@ const CartComponent = ({ data }) => {
           <Select
             labelId="demo-simple-select-standard-label"
             id="demo-simple-select-standard"
-            value={size}
-            onChange={handleChange}
+            value={data?.size}
+            onChange={(e) => handleChange(e)}
             label="Select size"
           >
             {data?.product_id?.size?.map((ele) => {
@@ -137,7 +148,13 @@ const CartComponent = ({ data }) => {
         >
           Rs.{data?.product_id?.price}
         </Typography>
-        <Typography color="primary">Delete</Typography>
+        <Typography
+          color="primary"
+          onClick={() => deleteCart()}
+          sx={{ cursor: "pointer" }}
+        >
+          Delete
+        </Typography>
       </Box>
     </Box>
   );

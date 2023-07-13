@@ -22,6 +22,28 @@ export const getCartPageThunk = createAsyncThunk(
   }
 );
 
+export const deleteCartThunk = createAsyncThunk(
+  "/cart/delete",
+  async (data) => {
+    try {
+      const res = await axios.post(`${BASE_URL}/cart/delete`, data);
+      return res.data;
+    } catch (error) {
+      return error.response.data;
+    }
+  }
+);
+export const updateSizeThunk = createAsyncThunk(
+  "/cart/updatesize",
+  async (data) => {
+    try {
+      const res = await axios.post(`${BASE_URL}/cart/updatesize`, data);
+      return res.data;
+    } catch (error) {
+      return error.response.data;
+    }
+  }
+);
 const initialState = {
   loading: false,
   updateDone: false,
@@ -39,6 +61,8 @@ const initialState = {
   },
   status: {
     getCartPageThunk: IDLE,
+    deleteCartThunk: IDLE,
+    updateSizeThunk: IDLE,
   },
 };
 
@@ -76,6 +100,58 @@ const cartSlice = createSlice({
       })
       .addCase(getCartPageThunk.rejected, (state, action) => {
         state.status.getCartPageThunk = ERROR;
+        state.loading = false;
+        state.errorData.message = action.error.message;
+      })
+      //deleteCartThunk======================================================================================================
+      .addCase(deleteCartThunk.pending, (state, { payload }) => {
+        state.loading = true;
+      })
+      .addCase(deleteCartThunk.fulfilled, (state, { payload }) => {
+        switch (payload.type) {
+          case SUCCESS:
+            state.loading = false;
+            state.updateDone = !state.updateDone;
+            state.status.deleteCartThunk = FULFILLED;
+            break;
+          default:
+            state.loading = false;
+            state.errorData = {
+              message: payload.message,
+              type: payload.type,
+              errors: payload.errors,
+            };
+            break;
+        }
+      })
+      .addCase(deleteCartThunk.rejected, (state, action) => {
+        state.status.deleteCartThunk = ERROR;
+        state.loading = false;
+        state.errorData.message = action.error.message;
+      })
+      //updateSizeThunk======================================================================================================
+      .addCase(updateSizeThunk.pending, (state, { payload }) => {
+        state.loading = true;
+      })
+      .addCase(updateSizeThunk.fulfilled, (state, { payload }) => {
+        switch (payload.type) {
+          case SUCCESS:
+            state.loading = false;
+            state.updateDone = !state.updateDone;
+            state.status.updateSizeThunk = FULFILLED;
+            break;
+          default:
+            state.loading = false;
+            state.errorData = {
+              message: payload.message,
+              type: payload.type,
+              errors: payload.errors,
+            };
+            break;
+        }
+      })
+      .addCase(updateSizeThunk.rejected, (state, action) => {
+        state.status.updateSizeThunk = ERROR;
         state.loading = false;
         state.errorData.message = action.error.message;
       });

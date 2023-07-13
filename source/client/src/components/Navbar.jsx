@@ -124,7 +124,14 @@ const Navbar = () => {
     >
       <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
       {isLogin ? (
-        <MenuItem onClick={() => dispatch(logoutThunk())}>Logout</MenuItem>
+        <MenuItem
+          onClick={() => {
+            dispatch(logoutThunk());
+            handleMenuClose();
+          }}
+        >
+          Logout
+        </MenuItem>
       ) : (
         <></>
       )}
@@ -151,24 +158,52 @@ const Navbar = () => {
       onClose={handleMobileMenuClose}
     >
       <MenuItem>
-        <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-          <Badge badgeContent={totalCart} color="error">
-            <ShoppingCartIcon />
-          </Badge>
-        </IconButton>
-        <p>cart</p>
+        <NavLink
+          to={User_Cart}
+          style={{
+            width: "100%",
+            textDecoration: "none",
+            color: "inherit",
+          }}
+          onClick={handleMobileMenuClose}
+        >
+          {({ isActive, isPending }) => (
+            <div style={{ display: "flex" }}>
+              <IconButton
+                size="large"
+                aria-label="show 4 new mails"
+                color="inherit"
+              >
+                <Badge badgeContent={totalCart} color="error">
+                  <ShoppingCartIcon />
+                </Badge>
+              </IconButton>
+              <p>cart</p>
+            </div>
+          )}
+        </NavLink>
       </MenuItem>
       <MenuItem>
         <Button
           variant="outlined"
           sx={{ color: "black", borderColor: "black" }}
-          onClick={() => (!isLogin ? setLoginOpen(!loginOpen) : "")}
+          onClick={() => {
+            //!isLogin ? setLoginOpen(!loginOpen) : "";
+            if (!isLogin) {
+              setLoginOpen(!loginOpen);
+            }
+            handleMobileMenuClose();
+          }}
         >
           {isLogin ? userName : "Login/Signup"}
         </Button>
       </MenuItem>
 
-      <MenuItem onClick={handleProfileMenuOpen}>
+      <MenuItem
+        onClick={(e) => {
+          handleProfileMenuOpen(e);
+        }}
+      >
         <IconButton
           size="large"
           aria-label="account of current user"
@@ -199,7 +234,10 @@ const Navbar = () => {
                 textDecoration: "none",
               }}
             >
-              <Link to={User_Home} style={{ textDecoration: "none" }}>
+              <Link
+                to={User_Home}
+                style={{ textDecoration: "none", color: "inherit" }}
+              >
                 Fashion
               </Link>
             </Typography>

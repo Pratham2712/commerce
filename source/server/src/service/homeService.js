@@ -79,31 +79,21 @@ export const getProductDetailService = async ({ product_id }) => {
 };
 
 export const addtocartService = async ({ userId, product_id }) => {
-  const cart = await cartModel.findOne({ userId: userId });
-  if (!cart) {
-    const newCart = await cartModel.create({
-      userId: userId,
-      list: [{ product_id: product_id, count: 1 }],
-    });
-    return newCart;
-  }
-
-  const productIndex = cart.list.findIndex((item) =>
-    item.product_id.equals(product_id)
+  const cart = await cartModel.findOneAndUpdate(
+    { userId: userId },
+    {
+      $push: { list: { product_id: product_id, count: 1 } },
+    },
+    { upsert: true, new: true }
   );
-
-  if (productIndex === -1) {
-    cart.list.push({ product_id: product_id, count: 1 });
-  } else {
-    cart.list[productIndex].count++;
-  }
-  await cart.save();
 
   return cart;
 };
 
 export const getAllCartService = async (data) => {
-  const res = await cartModel.findOne({ userId: data?.userId }, { list: 1 });
+  const res = await cartModel
+    .findOne({ userId: data?.userId }, { list: 1 })
+    .lean();
   let total = 0;
   if (res) {
     total = res.list.reduce((sum, item) => sum + item.count, 0);
