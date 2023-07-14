@@ -11,21 +11,17 @@ import {
 import AddBoxOutlinedIcon from "@mui/icons-material/AddBoxOutlined";
 import IndeterminateCheckBoxOutlinedIcon from "@mui/icons-material/IndeterminateCheckBoxOutlined";
 import { updateCartThunk } from "../redux/slices/homeSlice";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useTheme } from "@mui/material";
 import { deleteCartThunk, updateSizeThunk } from "../redux/slices/cartSlice";
-const CartComponent = ({ data }) => {
-  const [size, setSize] = React.useState("");
+import { SUCCESS } from "../constants/constants";
+const CartComponent = ({ data, errorId, setErrorId }) => {
   const dispatch = useDispatch();
   const theme = useTheme();
   //useSelector
-  const cartList = useSelector(
-    (state) => state.rootReducer.homeSlice.data.cart.list
-  );
   //function
   const updateCart = (e, type, id) => {
     e.stopPropagation();
-
     const info = {
       type: type,
       product_id: id,
@@ -35,10 +31,16 @@ const CartComponent = ({ data }) => {
   const handleChange = (event) => {
     const info = {
       product_id: data?.product?._id,
-      size: event.target.value,
+      size: event.target?.value,
     };
-    dispatch(updateSizeThunk(info));
-    setSize(event.target.value);
+    dispatch(updateSizeThunk(info)).then((data) => {
+      console.log(data.payload.data._id, errorId);
+      if (data.payload.type === SUCCESS) {
+        if (data.payload.data._id === errorId) {
+          setErrorId("");
+        }
+      }
+    });
   };
   const deleteCart = () => {
     const info = {
@@ -97,13 +99,31 @@ const CartComponent = ({ data }) => {
         >
           {data?.product?.title.slice(0, 20)}...
         </Typography>
-        <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
-          <InputLabel id="demo-simple-select-standard-label">
+        <FormControl
+          variant="standard"
+          sx={{ minWidth: 120 }}
+          error={errorId === data?._id}
+        >
+          <InputLabel
+            id={
+              errorId === data?._id
+                ? "demo-simple-select-error-label"
+                : "demo-simple-select-standard-label"
+            }
+          >
             Select size
           </InputLabel>
           <Select
-            labelId="demo-simple-select-standard-label"
-            id="demo-simple-select-standard"
+            labelId={
+              errorId === data?._id
+                ? "demo-simple-select-error-label"
+                : "demo-simple-select-standard-label"
+            }
+            id={
+              errorId === data?._id
+                ? "demo-simple-select-error"
+                : "demo-simple-select-standard"
+            }
             value={data?.size}
             onChange={(e) => handleChange(e)}
             label="Select size"

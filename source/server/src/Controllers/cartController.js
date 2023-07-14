@@ -15,8 +15,8 @@ export const getCartpageController = async (req, res, next) => {
       return res.status(200).json({
         type: SUCCESS,
         message: "Fetch cart successfully",
-        data: result[0].list,
-        totalPrice: result[0].total,
+        data: result[0]?.list,
+        totalPrice: result[0]?.total,
       });
     } else {
       return res.status(400).json({

@@ -14,12 +14,15 @@ import { getCartPageThunk } from "../redux/slices/cartSlice";
 import { getAllCartThunk } from "../redux/slices/homeSlice";
 import CartComponent from "../components/CartComponent";
 import { useTheme } from "@mui/material";
+import { createSearchParams, useSearchParams } from "react-router-dom";
 
 const Cart = () => {
   const dispatch = useDispatch();
-  const [page, setPage] = useState(0);
+  const [searchParams, setSearchParams] = useSearchParams();
   const theme = useTheme();
   const steps = ["Checkout cart", "Delivery details", "Payment"];
+  const [errorId, setErrorId] = useState("");
+
   //useSelector
   const isLogin = useSelector(
     (state) => state.rootReducer.UserInfoSlice.isLogin
@@ -37,14 +40,33 @@ const Cart = () => {
   );
 
   //function
+  const checkSize = () => {
+    for (const val of cart) {
+      if (!val?.size) {
+        setErrorId(val?._id);
+        return false;
+      }
+    }
+    return true;
+  };
   const nextPageDetails = () => {
-    setPage(1);
+    if (checkSize()) {
+      const params = Object.fromEntries(searchParams);
+      params["process"] = 1;
+      setSearchParams(createSearchParams(params));
+    }
   };
 
   useEffect(() => {
     dispatch(getCartPageThunk());
     dispatch(getAllCartThunk());
   }, [isLogin, updateDoneCart, updateDone]);
+
+  useEffect(() => {
+    const params = Object.fromEntries(searchParams);
+    params["process"] = 0;
+    setSearchParams(createSearchParams(params));
+  }, []);
 
   return (
     <>
@@ -56,7 +78,10 @@ const Cart = () => {
           margin: "0 auto",
         }}
       >
-        <Stepper activeStep={page} alternativeLabel>
+        <Stepper
+          activeStep={parseInt(searchParams.get("process"))}
+          alternativeLabel
+        >
           {steps.map((label) => (
             <Step key={label}>
               <StepLabel>{label}</StepLabel>
@@ -86,11 +111,17 @@ const Cart = () => {
           <Typography variant="h5">Please Login</Typography>
         ) : (
           <>
-            {page === 0 && (
+            {parseInt(searchParams.get("process")) === 0 && (
               <Grid container spacing={0} sx={{ justifyContent: "center" }}>
                 <Grid lg={8} md={9} sm={10} sx={{ width: "100%" }}>
                   {cart?.map((data) => {
-                    return <CartComponent data={data} />;
+                    return (
+                      <CartComponent
+                        data={data}
+                        errorId={errorId}
+                        setErrorId={setErrorId}
+                      />
+                    );
                   })}
                 </Grid>
                 <Grid lg={4} md={5}>
@@ -150,7 +181,7 @@ const Cart = () => {
                         }}
                       >
                         <Typography>Cart Total </Typography>
-                        <Typography>{totalPrice}</Typography>
+                        <Typography>₹{totalPrice || 0}</Typography>
                       </div>
                     </Box>
                     <div
@@ -176,8 +207,10 @@ const Cart = () => {
                 </Grid>
               </Grid>
             )}
-            {page === 1 && <div>Delivery details</div>}
-            {page === 2 && <div>Payment</div>}
+            {parseInt(searchParams.get("process")) === 1 && (
+              <div>Delivery details</div>
+            )}
+            {parseInt(searchParams.get("process")) === 2 && <div>Payment</div>}
           </>
         )}
       </Box>
