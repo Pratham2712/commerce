@@ -1,7 +1,9 @@
 import {
+  Alert,
   Box,
   Button,
   Grid,
+  Snackbar,
   Step,
   StepLabel,
   Stepper,
@@ -22,6 +24,12 @@ const Cart = () => {
   const theme = useTheme();
   const steps = ["Checkout cart", "Delivery details", "Payment"];
   const [errorId, setErrorId] = useState("");
+  const [sizeError, setSizeError] = useState(false);
+  const [state, setState] = useState({
+    vertical: "top",
+    horizontal: "center",
+  });
+  const { vertical, horizontal } = state;
 
   //useSelector
   const isLogin = useSelector(
@@ -43,7 +51,8 @@ const Cart = () => {
   const checkSize = () => {
     for (const val of cart) {
       if (!val?.size) {
-        setErrorId(val?._id);
+        setErrorId(val?.product_id);
+        setSizeError(true);
         return false;
       }
     }
@@ -56,7 +65,10 @@ const Cart = () => {
       setSearchParams(createSearchParams(params));
     }
   };
-
+  const clearSizeError = () => {
+    setSizeError(false);
+  };
+  //useEffect
   useEffect(() => {
     dispatch(getCartPageThunk());
     dispatch(getAllCartThunk());
@@ -70,6 +82,21 @@ const Cart = () => {
 
   return (
     <>
+      <Snackbar
+        open={sizeError}
+        anchorOrigin={{ vertical, horizontal }}
+        autoHideDuration={2000}
+        onClose={clearSizeError}
+      >
+        <Alert
+          severity="error"
+          variant="filled"
+          onClose={clearSizeError}
+          sx={{ width: "100%" }}
+        >
+          Select Size
+        </Alert>
+      </Snackbar>
       <Box
         sx={{
           width: "100%",
@@ -124,7 +151,7 @@ const Cart = () => {
                     );
                   })}
                 </Grid>
-                <Grid lg={4} md={5}>
+                <Grid lg={4} md={5} sx={{ width: "100%" }}>
                   <Box
                     sx={{
                       marginTop: "0.7rem",

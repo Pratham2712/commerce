@@ -36,8 +36,10 @@ const CartComponent = ({ data, errorId, setErrorId }) => {
     dispatch(updateSizeThunk(info)).then((data) => {
       console.log(data.payload.data._id, errorId);
       if (data.payload.type === SUCCESS) {
-        if (data.payload.data._id === errorId) {
-          setErrorId("");
+        for (const val of data.payload?.data?.list) {
+          if (val?.product_id === errorId) {
+            setErrorId("");
+          }
         }
       }
     });
@@ -102,11 +104,11 @@ const CartComponent = ({ data, errorId, setErrorId }) => {
         <FormControl
           variant="standard"
           sx={{ minWidth: 120 }}
-          error={errorId === data?._id}
+          error={errorId === data?.product_id}
         >
           <InputLabel
             id={
-              errorId === data?._id
+              errorId === data?.product_id
                 ? "demo-simple-select-error-label"
                 : "demo-simple-select-standard-label"
             }
@@ -115,12 +117,12 @@ const CartComponent = ({ data, errorId, setErrorId }) => {
           </InputLabel>
           <Select
             labelId={
-              errorId === data?._id
+              errorId === data?.product_id
                 ? "demo-simple-select-error-label"
                 : "demo-simple-select-standard-label"
             }
             id={
-              errorId === data?._id
+              errorId === data?.product_id
                 ? "demo-simple-select-error"
                 : "demo-simple-select-standard"
             }
