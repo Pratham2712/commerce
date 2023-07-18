@@ -1,4 +1,5 @@
 import cartModel from "../Models/cartModel.js";
+import userModel from "../Models/userModel.js";
 
 // export const getCartpageService = async (data) => {
 //   let total = 0;
@@ -89,4 +90,17 @@ export const updateSizeService = async (data) => {
   );
 
   return updatedCart;
+};
+
+export const addDelDetailsService = async (data) => {
+  const res = await userModel.findOneAndUpdate({ _id: data?.userId }, data);
+  return res;
+};
+
+export const getUserDetailsService = async (data) => {
+  const res = await userModel.find(
+    { _id: data?.userId },
+    { email: 1, phone: 1, address: 1, pincode: 1 }
+  );
+  return res;
 };

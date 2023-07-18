@@ -13,8 +13,6 @@ export const verifyToken = async (req, res, next) => {
       if (user) {
         req.body._id = user._id;
         req.body.username = user.username;
-        req.body.phone = user?.phone;
-        req.body.email = user?.email;
         next();
       } else {
         return res.status(401).json({

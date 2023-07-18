@@ -86,7 +86,7 @@ const Signup = ({ signup, setSignup }) => {
       password: password,
     };
     dispatch(signupThunk(detail)).then((data) => {
-      if (data.payload.type === SUCCESS) {
+      if (data?.payload?.type === SUCCESS) {
         setSuccessMsg(true);
         setSignup(false);
       }

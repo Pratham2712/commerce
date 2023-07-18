@@ -44,6 +44,30 @@ export const updateSizeThunk = createAsyncThunk(
     }
   }
 );
+export const addDelDetailsThunk = createAsyncThunk(
+  "/cart/addDelDetails",
+  async (data) => {
+    try {
+      const res = await axios.post(`${BASE_URL}/cart/addDelDetails`, data);
+      return res.data;
+    } catch (error) {
+      return error.response.data;
+    }
+  }
+);
+
+export const getUserDetailsThunk = createAsyncThunk(
+  "/cart/getuserdetail",
+  async () => {
+    try {
+      const res = await axios.get(`${BASE_URL}/cart/getuserdetail`);
+      return res.data;
+    } catch (error) {
+      return error.response.data;
+    }
+  }
+);
+
 const initialState = {
   loading: false,
   updateDone: false,
@@ -59,11 +83,13 @@ const initialState = {
   data: {
     cart: [],
     totalPrice: 0,
+    user: {},
   },
   status: {
     getCartPageThunk: IDLE,
     deleteCartThunk: IDLE,
     updateSizeThunk: IDLE,
+    addDelDetailsThunk: IDLE,
   },
 };
 
@@ -154,6 +180,57 @@ const cartSlice = createSlice({
       })
       .addCase(updateSizeThunk.rejected, (state, action) => {
         state.status.updateSizeThunk = ERROR;
+        state.loading = false;
+        state.errorData.message = action.error.message;
+      })
+      //addDelDetailsThunk======================================================================================================
+      .addCase(addDelDetailsThunk.pending, (state, { payload }) => {
+        state.loading = true;
+      })
+      .addCase(addDelDetailsThunk.fulfilled, (state, { payload }) => {
+        switch (payload.type) {
+          case SUCCESS:
+            state.loading = false;
+            state.status.addDelDetailsThunk = FULFILLED;
+            break;
+          default:
+            state.loading = false;
+            state.errorData = {
+              message: payload.message,
+              type: payload.type,
+              errors: payload.errors,
+            };
+            break;
+        }
+      })
+      .addCase(addDelDetailsThunk.rejected, (state, action) => {
+        state.status.addDelDetailsThunk = ERROR;
+        state.loading = false;
+        state.errorData.message = action.error.message;
+      })
+      //getUserDetailsThunk======================================================================================================
+      .addCase(getUserDetailsThunk.pending, (state, { payload }) => {
+        state.loading = true;
+      })
+      .addCase(getUserDetailsThunk.fulfilled, (state, { payload }) => {
+        switch (payload.type) {
+          case SUCCESS:
+            state.loading = false;
+            state.data.user = payload.data;
+            state.status.addDelDetailsThunk = FULFILLED;
+            break;
+          default:
+            state.loading = false;
+            state.errorData = {
+              message: payload.message,
+              type: payload.type,
+              errors: payload.errors,
+            };
+            break;
+        }
+      })
+      .addCase(getUserDetailsThunk.rejected, (state, action) => {
+        state.status.getUserDetailsThunk = ERROR;
         state.loading = false;
         state.errorData.message = action.error.message;
       });

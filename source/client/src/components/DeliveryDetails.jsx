@@ -11,17 +11,26 @@ import {
 import MailIcon from "@mui/icons-material/Mail";
 import BusinessIcon from "@mui/icons-material/Business";
 import SmartphoneOutlinedIcon from "@mui/icons-material/SmartphoneOutlined";
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addDelDetailsThunk,
+  getUserDetailsThunk,
+} from "../redux/slices/cartSlice";
+import { createSearchParams, useSearchParams } from "react-router-dom";
+import { SUCCESS } from "../constants/constants";
 
 const DeliveryDetails = () => {
   const theme = useTheme();
+  const dispatch = useDispatch();
+  const [searchParams, setSearchParams] = useSearchParams();
   //useSelector
   const totalPrice = useSelector(
     (state) => state.rootReducer.cartSlice.data.totalPrice
   );
+  const user = useSelector((state) => state.rootReducer.cartSlice.data.user);
   ///schema
   const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
   const schema = yup.object().shape({
@@ -35,11 +44,15 @@ const DeliveryDetails = () => {
       .min(1000000000, "phone number must be 10 digits")
       .max(9999999999, "phone number must be 10 digits")
       .required("phone number is required"),
-    address: yup.string().required("Delivery address is required"),
+    address: yup
+      .string()
+      .min(5, "delivery address is too short")
+      .required("delivery address is required"),
     pincode: yup
-      .number()
+      .string()
       .typeError("pincode is required")
-      .required("pincode is required"),
+      .required("pincode is required")
+      .matches(/^\d{6}$/, "Invalid pincode"),
   });
   //useForm
   const {
@@ -53,16 +66,35 @@ const DeliveryDetails = () => {
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      phone: "",
-      email: "",
-      address: "",
+      phone: user?.[0]?.phone,
+      email: user?.[0]?.email,
+      address: user?.[0]?.address,
+      pincode: user?.[0]?.pincode,
     },
   });
   //function
   const handleBlur = async (e) => {
     await trigger(e.target.name);
   };
-  const addBasicDetails = () => {};
+  const addBasicDetails = (values) => {
+    const data = {
+      phone: values.phone,
+      email: values.email,
+      address: values.address,
+      pincode: values.pincode,
+    };
+    dispatch(addDelDetailsThunk(data));
+  };
+
+  const goBack = () => {
+    const params = Object.fromEntries(searchParams);
+    params["process"] = 0;
+    setSearchParams(createSearchParams(params));
+  };
+  //useEffect
+  useEffect(() => {
+    dispatch(getUserDetailsThunk());
+  }, []);
   return (
     <Box
       sx={{
@@ -210,6 +242,11 @@ const DeliveryDetails = () => {
           onClick={handleSubmit(addBasicDetails)}
         >
           place order <br />₹{totalPrice || 0}
+        </Button>
+      </div>
+      <div style={{ marginTop: "2rem" }}>
+        <Button variant="outlined" onClick={() => goBack()}>
+          back
         </Button>
       </div>
     </Box>

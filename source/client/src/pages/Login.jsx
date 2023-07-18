@@ -63,12 +63,7 @@ const Login = ({ loginOpen, setLoginOpen }) => {
     (state) => state.rootReducer.UserInfoSlice.errorData.message
   );
   //schema
-  const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
   const schema = yup.object().shape({
-    // email: yup
-    //   .string()
-    //   .required("Email is required")
-    //   .matches(emailRegex, "Invalid email address"),
     password: yup
       .string()
       .min(3, "password must contain 3 letters")
@@ -191,34 +186,6 @@ const Login = ({ loginOpen, setLoginOpen }) => {
           <DialogTitle>Login</DialogTitle>
           <DialogContent>
             <DialogContentText></DialogContentText>
-            {/* <TextField
-              autoFocus
-              margin="dense"
-              id="email"
-              label="Email"
-              name="email"
-              type="text"
-              fullWidth
-              variant="filled"
-              {...register("email")}
-              onBlur={handleBlur}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <MailIcon />
-                  </InputAdornment>
-                ),
-              }}
-            />
-            <Typography sx={{ height: "1.5rem" }}>
-              <ErrorMessage
-                errors={errors}
-                name="email"
-                render={({ message }) => (
-                  <span style={{ color: "maroon" }}>{message}</span>
-                )}
-              />
-            </Typography> */}
             <TextField
               autoFocus
               margin="dense"

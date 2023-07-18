@@ -1,7 +1,9 @@
 import { FAILURE, SUCCESS } from "../constants/constants.js";
 import {
+  addDelDetailsService,
   deletCartService,
   getCartpageService,
+  getUserDetailsService,
   updateSizeService,
 } from "../service/cartService.js";
 
@@ -71,6 +73,57 @@ export const updateSizeController = async (req, res, next) => {
       return res.status(400).json({
         type: FAILURE,
         message: "Failed to update size",
+        errors: [],
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const addDelDetailsController = async (req, res, next) => {
+  try {
+    const data = {
+      userId: req.body?._id,
+      email: req.body?.email,
+      pincode: req.body?.pincode,
+      address: req.body?.address,
+      phone: req.body?.phone,
+    };
+    const result = await addDelDetailsService(data);
+    if (result) {
+      return res.status(200).json({
+        type: SUCCESS,
+        message: "Added details successfully",
+        data: result,
+      });
+    } else {
+      return res.status(400).json({
+        type: FAILURE,
+        message: "Failed to add details",
+        errors: [],
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+export const getUserDetailsController = async (req, res, next) => {
+  try {
+    const data = {
+      userId: req.body?._id,
+    };
+    const result = await getUserDetailsService(data);
+    if (result) {
+      return res.status(200).json({
+        type: SUCCESS,
+        message: "Fetched successfully",
+        data: result,
+      });
+    } else {
+      return res.status(400).json({
+        type: FAILURE,
+        message: "Failed to fetch details",
         errors: [],
       });
     }
