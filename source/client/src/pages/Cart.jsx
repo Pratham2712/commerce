@@ -17,6 +17,7 @@ import { getAllCartThunk } from "../redux/slices/homeSlice";
 import CartComponent from "../components/CartComponent";
 import { useTheme } from "@mui/material";
 import { createSearchParams, useSearchParams } from "react-router-dom";
+import DeliveryDetails from "../components/DeliveryDetails";
 
 const Cart = () => {
   const dispatch = useDispatch();
@@ -76,7 +77,7 @@ const Cart = () => {
 
   useEffect(() => {
     const params = Object.fromEntries(searchParams);
-    params["process"] = 0;
+    params["process"] = searchParams.get("process") || 0;
     setSearchParams(createSearchParams(params));
   }, []);
 
@@ -234,9 +235,7 @@ const Cart = () => {
                 </Grid>
               </Grid>
             )}
-            {parseInt(searchParams.get("process")) === 1 && (
-              <div>Delivery details</div>
-            )}
+            {parseInt(searchParams.get("process")) === 1 && <DeliveryDetails />}
             {parseInt(searchParams.get("process")) === 2 && <div>Payment</div>}
           </>
         )}

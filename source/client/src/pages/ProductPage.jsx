@@ -98,6 +98,9 @@ const ProductPage = () => {
       sx={{
         padding: "7rem 0rem 0rem 0rem",
         overflowX: "hidden",
+        [theme.breakpoints.down("sm")]: {
+          padding: "4rem 0rem 0rem 0rem",
+        },
       }}
     >
       <Box
@@ -105,6 +108,9 @@ const ProductPage = () => {
           display: "flex",
           justifyContent: "space-evenly",
           padding: "0rem 18rem",
+          [theme.breakpoints.down("xl")]: {
+            padding: "0rem 7rem",
+          },
           [theme.breakpoints.down("lg")]: {
             padding: "0rem 3rem",
             flexDirection: "column",
@@ -134,7 +140,7 @@ const ProductPage = () => {
             modules={[FreeMode, Navigation, Thumbs]}
             className="mySwiper"
             style={{
-              width: "30rem",
+              //width: "30rem",
               height: "5.5rem",
               marginTop: "2rem",
               cursor: "pointer",
@@ -172,8 +178,8 @@ const ProductPage = () => {
             lazy={true}
             modules={[Autoplay, Pagination, Navigation, Zoom, Thumbs]}
             style={{
-              width: "30rem",
-              height: "35rem",
+              //width: "30rem",
+              //height: "35rem",
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
@@ -203,13 +209,16 @@ const ProductPage = () => {
           </Swiper>
         </div>
         <Box
-          style={{
+          sx={{
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-between",
-            //marginLeft: "1rem",
+            marginLeft: "1rem",
             minHeight: "32rem",
             padding: "2rem 0rem",
+            [theme.breakpoints.down("lg")]: {
+              marginLeft: "0rem",
+            },
           }}
         >
           <Typography variant="h6" sx={{ float: "left" }}>

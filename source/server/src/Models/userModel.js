@@ -58,7 +58,11 @@ const userSchema = new mongoose.Schema(
       sparse: true,
     },
     address: {
-      type: [addressSchema],
+      type: String,
+    },
+    pincode: {
+      type: String,
+      validate: pinCodeValidator,
     },
     basicDetails: {
       type: Boolean,
