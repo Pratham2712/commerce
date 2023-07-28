@@ -1,4 +1,4 @@
-export const BASE_URL = `http://192.168.1.15:8000`;
+export const BASE_URL = `http://192.168.1.18:8000`;
 export const FAILURE = "FAILURE";
 export const OTP_FAILURE = "OTP_FAILURE";
 export const OTP_ACTIVE = "OTP_ACTIVE";

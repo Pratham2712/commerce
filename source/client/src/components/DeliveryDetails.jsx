@@ -54,6 +54,7 @@ const DeliveryDetails = () => {
       .required("pincode is required")
       .matches(/^\d{6}$/, "Invalid pincode"),
   });
+
   //useForm
   const {
     register,
@@ -66,10 +67,10 @@ const DeliveryDetails = () => {
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      phone: user?.[0]?.phone,
-      email: user?.[0]?.email,
-      address: user?.[0]?.address,
-      pincode: user?.[0]?.pincode,
+      phone: "",
+      email: "",
+      address: "",
+      pincode: "",
     },
   });
   //function
@@ -95,6 +96,15 @@ const DeliveryDetails = () => {
   useEffect(() => {
     dispatch(getUserDetailsThunk());
   }, []);
+  useEffect(() => {
+    if (user && user[0]) {
+      const { phone, email, address, pincode } = user[0];
+      setValue("phone", phone || "");
+      setValue("email", email || "");
+      setValue("address", address || "");
+      setValue("pincode", pincode || "");
+    }
+  }, [user]);
   return (
     <Box
       sx={{
