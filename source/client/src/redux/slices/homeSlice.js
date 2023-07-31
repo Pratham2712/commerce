@@ -266,7 +266,6 @@ const homeSlice = createSlice({
         state.loading = true;
       })
       .addCase(getAllCartThunk.fulfilled, (state, { payload }) => {
-        console.log(payload);
         switch (payload.type) {
           case SUCCESS:
             state.loading = false;

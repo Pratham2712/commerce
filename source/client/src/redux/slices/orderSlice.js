@@ -22,6 +22,18 @@ export const createOrderThunk = createAsyncThunk(
   }
 );
 
+export const createRazorOrderThunk = createAsyncThunk(
+  "/order/createRazorOrder",
+  async (data) => {
+    try {
+      const res = await axios.post(`${BASE_URL}/order/createRazorOrder`, data);
+      return res.data;
+    } catch (error) {
+      return error.response.data;
+    }
+  }
+);
+
 const initialState = {
   loading: false,
   updateDone: false,
@@ -39,6 +51,7 @@ const initialState = {
   },
   status: {
     createOrderThunk: IDLE,
+    createRazorOrderThunk: IDLE,
   },
 };
 
@@ -76,6 +89,31 @@ const orderSlice = createSlice({
       })
       .addCase(createOrderThunk.rejected, (state, action) => {
         state.status.createOrderThunk = ERROR;
+        state.loading = false;
+        state.errorData.message = action.error.message;
+      })
+      //createRazorOrderThunk======================================================================================================
+      .addCase(createRazorOrderThunk.pending, (state, { payload }) => {
+        state.loading = true;
+      })
+      .addCase(createRazorOrderThunk.fulfilled, (state, { payload }) => {
+        switch (payload.type) {
+          case SUCCESS:
+            state.loading = false;
+            state.status.createRazorOrderThunk = FULFILLED;
+            break;
+          default:
+            state.loading = false;
+            state.errorData = {
+              message: payload.message,
+              type: payload.type,
+              errors: payload.errors,
+            };
+            break;
+        }
+      })
+      .addCase(createRazorOrderThunk.rejected, (state, action) => {
+        state.status.createRazorOrderThunk = ERROR;
         state.loading = false;
         state.errorData.message = action.error.message;
       });

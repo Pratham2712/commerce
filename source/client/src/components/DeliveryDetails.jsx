@@ -20,7 +20,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { getUserDetailsThunk } from "../redux/slices/cartSlice";
 import { createSearchParams, useSearchParams } from "react-router-dom";
 import { SUCCESS } from "../constants/constants";
-import { createOrderThunk } from "../redux/slices/orderSlice";
+import {
+  createOrderThunk,
+  createRazorOrderThunk,
+} from "../redux/slices/orderSlice";
 
 const DeliveryDetails = () => {
   const theme = useTheme();
@@ -101,14 +104,14 @@ const DeliveryDetails = () => {
       cart_id: cart_id,
     };
     dispatch(createOrderThunk(data)).then((data) => {
-      if (data.payload.type === SUCCESS) {
+      if (data.payload?.type === SUCCESS) {
         setProceed(true);
         setSuccessMsg(true);
       }
     });
   };
   const createRazorOrder = () => {
-    //dispatch(createRazorOrderThunk({ order_id: order_id }));
+    dispatch(createRazorOrderThunk({ order_id: order_id?._id }));
   };
   const goBack = () => {
     const params = Object.fromEntries(searchParams);
