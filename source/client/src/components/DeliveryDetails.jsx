@@ -1,9 +1,11 @@
 import { ErrorMessage } from "@hookform/error-message";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
+  Alert,
   Box,
   Button,
   InputAdornment,
+  Snackbar,
   TextField,
   Typography,
   useTheme,
@@ -11,24 +13,36 @@ import {
 import MailIcon from "@mui/icons-material/Mail";
 import BusinessIcon from "@mui/icons-material/Business";
 import SmartphoneOutlinedIcon from "@mui/icons-material/SmartphoneOutlined";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  addDelDetailsThunk,
-  getUserDetailsThunk,
-} from "../redux/slices/cartSlice";
+import { getUserDetailsThunk } from "../redux/slices/cartSlice";
 import { createSearchParams, useSearchParams } from "react-router-dom";
 import { SUCCESS } from "../constants/constants";
+import { createOrderThunk } from "../redux/slices/orderSlice";
 
 const DeliveryDetails = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
+  const [proceed, setProceed] = useState(false);
+  const [successMsg, setSuccessMsg] = useState(false);
+  const [state, setState] = useState({
+    open: false,
+    vertical: "top",
+    horizontal: "center",
+  });
+  const { vertical, horizontal } = state;
   //useSelector
   const totalPrice = useSelector(
     (state) => state.rootReducer.cartSlice.data.totalPrice
+  );
+  const cart_id = useSelector(
+    (state) => state.rootReducer.homeSlice.data.cart.id
+  );
+  const order_id = useSelector(
+    (state) => state.rootReducer.orderSlice.data.currentOrder
   );
   const user = useSelector((state) => state.rootReducer.cartSlice.data.user);
   ///schema
@@ -59,7 +73,7 @@ const DeliveryDetails = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors, isDirty, isValidating },
+    formState: { errors },
     trigger,
     watch,
     setValue,
@@ -77,16 +91,25 @@ const DeliveryDetails = () => {
   const handleBlur = async (e) => {
     await trigger(e.target.name);
   };
-  const addBasicDetails = (values) => {
+  const createOrder = (values) => {
     const data = {
       phone: values.phone,
       email: values.email,
       address: values.address,
       pincode: values.pincode,
+      amount: totalPrice,
+      cart_id: cart_id,
     };
-    dispatch(addDelDetailsThunk(data));
+    dispatch(createOrderThunk(data)).then((data) => {
+      if (data.payload.type === SUCCESS) {
+        setProceed(true);
+        setSuccessMsg(true);
+      }
+    });
   };
-
+  const createRazorOrder = () => {
+    //dispatch(createRazorOrderThunk({ order_id: order_id }));
+  };
   const goBack = () => {
     const params = Object.fromEntries(searchParams);
     params["process"] = 0;
@@ -125,6 +148,25 @@ const DeliveryDetails = () => {
         overflowX: "hidden",
       }}
     >
+      <Snackbar
+        open={successMsg}
+        anchorOrigin={{ vertical, horizontal }}
+        autoHideDuration={2000}
+        onClose={() => {
+          setSuccessMsg(false);
+        }}
+      >
+        <Alert
+          severity="success"
+          variant="filled"
+          onClose={() => {
+            setSuccessMsg(false);
+          }}
+          sx={{ width: "100%" }}
+        >
+          Delivery Details Confirmed
+        </Alert>
+      </Snackbar>
       <TextField
         margin="dense"
         id="phone"
@@ -238,9 +280,28 @@ const DeliveryDetails = () => {
       <div
         style={{
           display: "flex",
+          justifyContent: "flex-start",
+          alignItems: "center",
+          marginTop: "0rem",
+        }}
+      >
+        <Button
+          sx={{
+            width: "40%",
+          }}
+          variant="outlined"
+          color="primary"
+          onClick={handleSubmit(createOrder)}
+        >
+          Confirm Details
+        </Button>
+      </div>
+      <div
+        style={{
+          display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          marginTop: "1rem",
+          marginTop: "1.5rem",
         }}
       >
         <Button
@@ -248,8 +309,11 @@ const DeliveryDetails = () => {
             width: "40%",
           }}
           variant="contained"
+          disabled={proceed ? "" : "true"}
           color="secondary"
-          onClick={handleSubmit(addBasicDetails)}
+          onClick={() => {
+            createRazorOrder();
+          }}
         >
           place order <br />₹{totalPrice || 0}
         </Button>

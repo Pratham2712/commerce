@@ -128,6 +128,7 @@ export const getAllCartController = async (req, res, next) => {
         type: SUCCESS,
         message: "Fetch all cart successfully",
         data: cartDetail,
+        id: result.data._id,
         total: result.totalCart,
       });
     } else {

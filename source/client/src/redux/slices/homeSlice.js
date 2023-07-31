@@ -127,6 +127,7 @@ const initialState = {
     total: 0,
     productDetail: {},
     cart: {
+      id: "",
       list: {},
       totalCart: 0,
     },
@@ -265,10 +266,12 @@ const homeSlice = createSlice({
         state.loading = true;
       })
       .addCase(getAllCartThunk.fulfilled, (state, { payload }) => {
+        console.log(payload);
         switch (payload.type) {
           case SUCCESS:
             state.loading = false;
             state.data.cart.list = payload.data;
+            state.data.cart.id = payload.id;
             state.data.cart.totalCart = payload.total;
             state.status.addToCartThunk = FULFILLED;
             break;

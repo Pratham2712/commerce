@@ -1,4 +1,5 @@
 import cartModel from "../Models/cartModel.js";
+import orderModel from "../Models/orderModel.js";
 import userModel from "../Models/userModel.js";
 
 // export const getCartpageService = async (data) => {
@@ -90,11 +91,6 @@ export const updateSizeService = async (data) => {
   );
 
   return updatedCart;
-};
-
-export const addDelDetailsService = async (data) => {
-  const res = await userModel.findOneAndUpdate({ _id: data?.userId }, data);
-  return res;
 };
 
 export const getUserDetailsService = async (data) => {

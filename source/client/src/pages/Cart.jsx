@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getCartPageThunk } from "../redux/slices/cartSlice";
+import { createOrderThunk, getCartPageThunk } from "../redux/slices/cartSlice";
 
 import { getAllCartThunk } from "../redux/slices/homeSlice";
 import CartComponent from "../components/CartComponent";
@@ -41,6 +41,7 @@ const Cart = () => {
   );
 
   const cart = useSelector((state) => state.rootReducer.cartSlice.data.cart);
+
   const totalPrice = useSelector(
     (state) => state.rootReducer.cartSlice.data.totalPrice
   );

@@ -44,17 +44,6 @@ export const updateSizeThunk = createAsyncThunk(
     }
   }
 );
-export const addDelDetailsThunk = createAsyncThunk(
-  "/cart/addDelDetails",
-  async (data) => {
-    try {
-      const res = await axios.post(`${BASE_URL}/cart/addDelDetails`, data);
-      return res.data;
-    } catch (error) {
-      return error.response.data;
-    }
-  }
-);
 
 export const getUserDetailsThunk = createAsyncThunk(
   "/cart/getuserdetail",
@@ -180,31 +169,6 @@ const cartSlice = createSlice({
       })
       .addCase(updateSizeThunk.rejected, (state, action) => {
         state.status.updateSizeThunk = ERROR;
-        state.loading = false;
-        state.errorData.message = action.error.message;
-      })
-      //addDelDetailsThunk======================================================================================================
-      .addCase(addDelDetailsThunk.pending, (state, { payload }) => {
-        state.loading = true;
-      })
-      .addCase(addDelDetailsThunk.fulfilled, (state, { payload }) => {
-        switch (payload.type) {
-          case SUCCESS:
-            state.loading = false;
-            state.status.addDelDetailsThunk = FULFILLED;
-            break;
-          default:
-            state.loading = false;
-            state.errorData = {
-              message: payload.message,
-              type: payload.type,
-              errors: payload.errors,
-            };
-            break;
-        }
-      })
-      .addCase(addDelDetailsThunk.rejected, (state, action) => {
-        state.status.addDelDetailsThunk = ERROR;
         state.loading = false;
         state.errorData.message = action.error.message;
       })

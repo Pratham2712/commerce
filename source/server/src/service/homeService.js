@@ -92,7 +92,7 @@ export const addtocartService = async ({ userId, product_id }) => {
 
 export const getAllCartService = async (data) => {
   const res = await cartModel
-    .findOne({ userId: data?.userId }, { list: 1 })
+    .findOne({ userId: data?.userId }, { list: 1 }, { _id: 1 })
     .lean();
   let total = 0;
   if (res) {
