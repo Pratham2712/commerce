@@ -1,5 +1,5 @@
-import orderModel from "../Models/orderModel";
-import userModel from "../Models/userModel";
+import orderModel from "../Models/orderModel.js";
+import userModel from "../Models/userModel.js";
 
 export const createOrderService = async (data) => {
   const res = await userModel.findOneAndUpdate({ _id: data?.userId }, data);
@@ -18,4 +18,9 @@ export const createOrderService = async (data) => {
     isActive: false,
   });
   return order;
+};
+
+export const getOrderService = async (data) => {
+  const res = await orderModel.findById(data?._id);
+  return res;
 };

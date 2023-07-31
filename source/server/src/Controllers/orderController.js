@@ -1,4 +1,10 @@
-import { createOrderService } from "../service/orderService.js";
+import { FAILURE, SUCCESS } from "../constants/constants.js";
+import Razorpay from "razorpay";
+
+import {
+  createOrderService,
+  getOrderService,
+} from "../service/orderService.js";
 
 export const createOrderController = async (req, res, next) => {
   try {
@@ -25,6 +31,50 @@ export const createOrderController = async (req, res, next) => {
         errors: [],
       });
     }
+  } catch (error) {
+    next(error);
+  }
+};
+export const createRazorOrderController = async (req, res, next) => {
+  try {
+    const data = {
+      _id: req.body?.order_id,
+    };
+    let razorpayInstance = new Razorpay({
+      key_id: process.env.RAZORPAY_KEY,
+      key_secret: process.env.RAZORPAY_SECRET,
+    });
+    const order = await getOrderService(data);
+    if (!order) {
+      return res.status(400).json({
+        type: FAILURE,
+        message: "Failed to proceed",
+      });
+    }
+    let options = {
+      amount: order.amount * 100, // amount in the smallest currency unit
+      currency: "INR",
+      receipt: "order_rcptid_11",
+    };
+    //order creation
+    razorpayInstance.orders.create(options, function (err, order) {
+      if (err) {
+        req.error = err;
+        next(err);
+      }
+      if (order) {
+        return res.status(200).json({
+          type: SUCCESS,
+          data: order,
+          message: "order successfully created",
+        });
+      } else {
+        return res.status(400).json({
+          type: FAILURE,
+          message: "Failed to create order",
+        });
+      }
+    });
   } catch (error) {
     next(error);
   }

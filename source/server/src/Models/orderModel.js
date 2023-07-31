@@ -39,6 +39,8 @@ const orderSchema = new mongoose.Schema(
     },
     isActive: {
       type: Boolean,
+      default: false,
+      required: true,
     },
     amount: {
       type: Number,
@@ -55,6 +57,13 @@ const orderSchema = new mongoose.Schema(
       type: mongoose.Types.ObjectId,
       ref: "cart",
       required: true,
+    },
+    paymentInitiated: {
+      type: Boolean,
+      default: false,
+    },
+    payOrderId: {
+      type: String,
     },
   },
   { timestamps: true }
