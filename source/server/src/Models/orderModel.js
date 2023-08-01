@@ -16,17 +16,14 @@ const pinCodeValidator = (value) => {
 const AddressSchema = new mongoose.Schema({
   address: {
     type: String,
-    required: true,
   },
   pincode: {
     type: String,
     validate: pinCodeValidator,
-    required: true,
   },
   phone: {
     type: String,
     validate: phoneValidate,
-    required: true,
   },
 });
 
@@ -35,6 +32,10 @@ const orderSchema = new mongoose.Schema(
     userId: {
       type: mongoose.Types.ObjectId,
       ref: "user",
+      required: true,
+    },
+    username: {
+      type: String,
       required: true,
     },
     isActive: {
@@ -51,7 +52,6 @@ const orderSchema = new mongoose.Schema(
     },
     email: {
       type: String,
-      required: true,
     },
     cart: {
       type: mongoose.Types.ObjectId,

@@ -11,13 +11,15 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { createOrderThunk, getCartPageThunk } from "../redux/slices/cartSlice";
+import { getCartPageThunk } from "../redux/slices/cartSlice";
 
 import { getAllCartThunk } from "../redux/slices/homeSlice";
 import CartComponent from "../components/CartComponent";
 import { useTheme } from "@mui/material";
 import { createSearchParams, useSearchParams } from "react-router-dom";
 import DeliveryDetails from "../components/DeliveryDetails";
+import { SUCCESS } from "../constants/constants";
+import { createOrderThunk } from "../redux/slices/orderSlice";
 
 const Cart = () => {
   const dispatch = useDispatch();
@@ -48,7 +50,9 @@ const Cart = () => {
   const updateDoneCart = useSelector(
     (state) => state.rootReducer.cartSlice.updateDone
   );
-
+  const cart_id = useSelector(
+    (state) => state.rootReducer.homeSlice.data.cart.id
+  );
   //function
   const checkSize = () => {
     for (const val of cart) {
@@ -62,9 +66,17 @@ const Cart = () => {
   };
   const nextPageDetails = () => {
     if (checkSize()) {
-      const params = Object.fromEntries(searchParams);
-      params["process"] = 1;
-      setSearchParams(createSearchParams(params));
+      const data = {
+        amount: totalPrice,
+        cart_id: cart_id,
+      };
+      dispatch(createOrderThunk(data)).then((data) => {
+        if (data.payload?.type === SUCCESS) {
+          const params = Object.fromEntries(searchParams);
+          params["process"] = 1;
+          setSearchParams(createSearchParams(params));
+        }
+      });
     }
   };
   const clearSizeError = () => {
@@ -113,7 +125,7 @@ const Cart = () => {
         >
           {steps.map((label) => (
             <Step key={label}>
-              <StepLabel>{label}</StepLabel>
+              <StepLabel color="secondary">{label}</StepLabel>
             </Step>
           ))}
         </Stepper>
