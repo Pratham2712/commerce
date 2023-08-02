@@ -1,8 +1,10 @@
 import { FAILURE, SUCCESS } from "../constants/constants.js";
 import Razorpay from "razorpay";
-
+import crypto from "crypto";
 import {
+  addPayOrderService,
   createOrderService,
+  deleteCartService,
   getOrderService,
   updateOrderService,
 } from "../service/orderService.js";
@@ -114,6 +116,41 @@ export const createRazorOrderController = async (req, res, next) => {
           message: "Failed to create order",
         });
       }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const verifyPaymentController = async (req, res, next) => {
+  try {
+    let body =
+      req.body?.payment?.razorpay_order_id +
+      "|" +
+      req.body?.payment?.razorpay_payment_id;
+    let generated_signature = crypto
+      .createHmac("sha256", process.env.RAZORPAY_SECRET)
+      .update(body.toString())
+      .digest("hex");
+    if (generated_signature == req.body?.payment?.razorpay_signature) {
+      const deleteCart = await deleteCartService({ id: req.body?.cart_id });
+      const data = {
+        id: req.body?.order_id,
+        payOrderId: req.body?.payment?.razorpay_order_id,
+        payment_id: req.body?.payment?.razorpay_payment_id,
+      };
+      console.log("controller data", data);
+      const order = await addPayOrderService(data);
+      console.log("contorller", order);
+      return res.status(200).json({
+        type: SUCCESS,
+        message: "payment verified",
+      });
+    }
+    return res.status(400).json({
+      type: FAILURE,
+      message: "Failed to verify payment",
+      errors: [],
     });
   } catch (error) {
     next(error);

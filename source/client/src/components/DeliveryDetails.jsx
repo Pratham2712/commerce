@@ -23,6 +23,7 @@ import { SUCCESS } from "../constants/constants";
 import {
   createRazorOrderThunk,
   updateOrderThunk,
+  verifyPaymentThunk,
 } from "../redux/slices/orderSlice";
 
 const DeliveryDetails = () => {
@@ -145,8 +146,7 @@ const DeliveryDetails = () => {
       image: "Fashion",
       order_id: data.order.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
       handler: function (response) {
-        console.log(response);
-        //verifyPayment(response, data.extensionNumber);
+        verifyPayment(response);
       },
       prefill: {
         name: data.name,
@@ -160,6 +160,14 @@ const DeliveryDetails = () => {
     };
     const rzp = window.Razorpay(options);
     return rzp;
+  };
+  const verifyPayment = async (response) => {
+    const data = {
+      cart_id: cart_id,
+      order_id: order_id?._id,
+      payment: response,
+    };
+    dispatch(verifyPaymentThunk(data));
   };
   const goBack = () => {
     const params = Object.fromEntries(searchParams);

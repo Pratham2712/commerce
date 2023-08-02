@@ -45,6 +45,18 @@ export const createRazorOrderThunk = createAsyncThunk(
   }
 );
 
+export const verifyPaymentThunk = createAsyncThunk(
+  "/order/verifyPayment",
+  async (data) => {
+    try {
+      const res = await axios.post(`${BASE_URL}/order/verifyPayment`, data);
+      return res.data;
+    } catch (error) {
+      return error.response.data;
+    }
+  }
+);
+
 const initialState = {
   loading: false,
   updateDone: false,
@@ -64,6 +76,7 @@ const initialState = {
     createOrderThunk: IDLE,
     createRazorOrderThunk: IDLE,
     updateOrderThunk: IDLE,
+    verifyPaymentThunk: IDLE,
   },
 };
 
@@ -152,6 +165,31 @@ const orderSlice = createSlice({
       })
       .addCase(createRazorOrderThunk.rejected, (state, action) => {
         state.status.createRazorOrderThunk = ERROR;
+        state.loading = false;
+        state.errorData.message = action.error.message;
+      })
+      //verifyPaymentThunk======================================================================================================
+      .addCase(verifyPaymentThunk.pending, (state, { payload }) => {
+        state.loading = true;
+      })
+      .addCase(verifyPaymentThunk.fulfilled, (state, { payload }) => {
+        switch (payload.type) {
+          case SUCCESS:
+            state.loading = false;
+            state.status.verifyPaymentThunk = FULFILLED;
+            break;
+          default:
+            state.loading = false;
+            state.errorData = {
+              message: payload.message,
+              type: payload.type,
+              errors: payload.errors,
+            };
+            break;
+        }
+      })
+      .addCase(verifyPaymentThunk.rejected, (state, action) => {
+        state.status.verifyPaymentThunk = ERROR;
         state.loading = false;
         state.errorData.message = action.error.message;
       });
