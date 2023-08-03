@@ -71,7 +71,14 @@ const Products = () => {
   }, [wishUpdate, isLogin]);
 
   return (
-    <Box sx={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
+    <Box
+      sx={{
+        display: "flex",
+        flexWrap: "wrap",
+        justifyContent: "center",
+        width: "100%",
+      }}
+    >
       {product.map((data) => {
         return (
           <ProductCard
