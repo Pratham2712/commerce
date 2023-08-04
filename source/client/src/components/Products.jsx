@@ -76,7 +76,7 @@ const Products = () => {
         display: "flex",
         flexWrap: "wrap",
         justifyContent: "center",
-        width: "100%",
+        //width: "100%",
       }}
     >
       {product.map((data) => {
