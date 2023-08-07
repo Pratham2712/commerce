@@ -47,7 +47,7 @@ const Products = () => {
   useEffect(() => {
     pageParams(
       searchParams.get("page") || 1,
-      searchParams.get("pagesize") || 4
+      searchParams.get("pagesize") || 10
     );
     const data = {
       page: searchParams.get("page") - 1,
@@ -100,7 +100,7 @@ const Products = () => {
           <Pagination
             count={total}
             onChange={(e, value) => {
-              pageParams(parseInt(value), 4);
+              pageParams(parseInt(value), 10);
             }}
             color="secondary"
             page={parseInt(searchParams.get("page"))}

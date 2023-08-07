@@ -9,6 +9,7 @@ import { homeRouter } from "./src/Routes/homeRouter.js";
 import { adminRouter } from "./src/Routes/adminRouter.js";
 import { cartRouter } from "./src/Routes/cartRouter.js";
 import { orderRouter } from "./src/Routes/orderRouter.js";
+import { filterRouter } from "./src/Routes/filterRouter.js";
 
 dotenv.config();
 
@@ -40,6 +41,7 @@ app.use("/home", homeRouter);
 app.use("/admin", adminRouter);
 app.use("/cart", verifyToken, cartRouter);
 app.use("/order", verifyToken, orderRouter);
+app.use("/filter", filterRouter);
 app.listen(8000, () => {
   console.log("Listening on port 8000");
 });
