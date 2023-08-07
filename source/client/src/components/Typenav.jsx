@@ -46,7 +46,7 @@ const Typenav = () => {
     params["type"] = type;
     params["subcategory"] = subcategory;
     params["page"] = 1;
-    params["pagesize"] = 4;
+    params["pagesize"] = 10;
     setSearchParams(createSearchParams(params));
     handleClose();
   };

@@ -62,12 +62,17 @@ export const getProductController = async (req, res, next) => {
     if (data?.sub) {
       filter.subCategory = data.sub;
     }
+    console.log(req.body?.color);
+    // if (data?.color) {
+    //   filter.color = { $in: data.color };
+    // }
     if (data?.page) {
       pagination.page = data.page;
     }
     if (data?.pagesize) {
       pagination.pagesize = data.pagesize;
     }
+
     const result = await getProductService(pagination, filter);
     if (result) {
       return res.status(200).json({

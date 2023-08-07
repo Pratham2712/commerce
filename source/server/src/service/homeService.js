@@ -63,6 +63,7 @@ export const getTypeCatService = async (data) => {
 };
 
 export const getProductService = async (data, filter) => {
+  console.log(filter);
   const total = await productModel.find(filter).count();
   const pagesize = data.pagesize || 10;
   const page = data.page || 0;

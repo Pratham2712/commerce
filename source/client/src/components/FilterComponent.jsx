@@ -5,7 +5,7 @@ import {
   Box,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import { useDispatch, useSelector } from "react-redux";
@@ -21,6 +21,7 @@ const FilterComponent = () => {
   const [color, setColor] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const dispatch = useDispatch();
+  const location = useLocation();
   //useSelector
   const allcolor = useSelector(
     (state) => state.rootReducer.filterSlice.data.color
@@ -37,22 +38,27 @@ const FilterComponent = () => {
   };
 
   const addFilter = (data) => {
-    const params = Object.fromEntries(searchParams);
-    if (params.color) {
-      params.color = Array.isArray(params.color)
-        ? params.color
-        : [params.color];
-      params.color.push(data);
-    } else {
-      params.color = [data];
-    }
-    setSearchParams(createSearchParams(params));
+    // const params = Object.fromEntries(searchParams);
+    // if (params.color) {
+    //   params.color = Array.isArray(params.color)
+    //     ? params.color
+    //     : [params.color];
+    //   params.color.push(data);
+    // } else {
+    //   params.color = [data];
+    // }
+    // setSearchParams(createSearchParams(params));
+    const newSearchParams = new URLSearchParams(location.search);
+    newSearchParams.append("color", data);
+    setSearchParams(newSearchParams);
   };
 
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const colors = queryParams.getAll("color");
-  console.log(colors);
+  useEffect(() => {
+    console.log("called");
+    console.log(Object.fromEntries(searchParams));
+    console.log("search params", searchParams);
+  }, [location.search]);
+
   return (
     <Box>
       <Typography variant="h5" sx={{ marginBottom: "1rem" }}>
@@ -228,6 +234,7 @@ const FilterComponent = () => {
                           border: "solid 0.1px black",
                           marginRight: "0.1rem",
                           marginBottom: "0.5rem",
+                          cursor: "pointer",
                         }}
                         onClick={() => addFilter(ele?.color)}
                       ></div>
@@ -235,15 +242,6 @@ const FilterComponent = () => {
                   );
                 })}
               </Box>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  marginBottom: "0.2rem",
-                }}
-              >
-                <Typography>Rs.1001-1500</Typography>
-              </div>
             </AccordionDetails>
           </Accordion>
         </Box>
