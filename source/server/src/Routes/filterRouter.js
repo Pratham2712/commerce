@@ -1,8 +1,12 @@
 import { Router } from "express";
-import { getColorController } from "../Controllers/filterController.js";
+import {
+  getBrandController,
+  getColorController,
+} from "../Controllers/filterController.js";
 
 const filterRouter = Router();
 
 filterRouter.post("/getColor", getColorController);
+filterRouter.post("/getBrand", getBrandController);
 
 export { filterRouter };

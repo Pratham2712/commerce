@@ -21,6 +21,17 @@ export const getColorThunk = createAsyncThunk(
     }
   }
 );
+export const getBrandThunk = createAsyncThunk(
+  "/filter/getBrand",
+  async (data) => {
+    try {
+      const res = await axios.post(`${BASE_URL}/filter/getBrand`, data);
+      return res.data;
+    } catch (error) {
+      return error.response.data;
+    }
+  }
+);
 
 const initialState = {
   loading: false,
@@ -36,9 +47,11 @@ const initialState = {
   isError: false,
   data: {
     color: [],
+    brand: [],
   },
   status: {
     getColorThunk: IDLE,
+    getBrandThunk: IDLE,
   },
 };
 
@@ -76,6 +89,32 @@ const filterSlice = createSlice({
       })
       .addCase(getColorThunk.rejected, (state, action) => {
         state.status.getColorThunk = ERROR;
+        state.loading = false;
+        state.errorData.message = action.error.message;
+      })
+      //getBrandThunk======================================================================================================
+      .addCase(getBrandThunk.pending, (state, { payload }) => {
+        state.loading = true;
+      })
+      .addCase(getBrandThunk.fulfilled, (state, { payload }) => {
+        switch (payload.type) {
+          case SUCCESS:
+            state.loading = false;
+            state.data.brand = payload.data;
+            state.status.getBrandThunk = FULFILLED;
+            break;
+          default:
+            state.loading = false;
+            state.errorData = {
+              message: payload.message,
+              type: payload.type,
+              errors: payload.errors,
+            };
+            break;
+        }
+      })
+      .addCase(getBrandThunk.rejected, (state, action) => {
+        state.status.getBrandThunk = ERROR;
         state.loading = false;
         state.errorData.message = action.error.message;
       });

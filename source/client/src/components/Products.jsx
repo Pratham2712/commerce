@@ -8,12 +8,7 @@ import {
 } from "../redux/slices/homeSlice";
 
 import { Pagination, Stack } from "@mui/material";
-import {
-  createSearchParams,
-  useLocation,
-  useNavigate,
-  useSearchParams,
-} from "react-router-dom";
+import { createSearchParams, useSearchParams } from "react-router-dom";
 import Login from "../pages/Login";
 import ProductCard from "./ProductCard";
 
@@ -43,8 +38,6 @@ const Products = () => {
     params["pagesize"] = pageSize;
     setSearchParams(createSearchParams(params));
   };
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
   //useEffect
   useEffect(() => {
     pageParams(
@@ -56,7 +49,6 @@ const Products = () => {
       pagesize: searchParams.get("pagesize"),
       type: searchParams.get("type"),
       sub: searchParams.get("subcategory"),
-      color: queryParams.getAll("color"),
     };
 
     dispatch(getProductThunk(data));

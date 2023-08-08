@@ -62,10 +62,20 @@ export const getProductController = async (req, res, next) => {
     if (data?.sub) {
       filter.subCategory = data.sub;
     }
-    console.log(req.body?.color);
-    // if (data?.color) {
-    //   filter.color = { $in: data.color };
-    // }
+    if (data?.color) {
+      if (Array.isArray(data.color)) {
+        filter.color = data.color;
+      } else {
+        filter.color = [data.color];
+      }
+    }
+    if (data?.brand) {
+      if (Array.isArray(data.brand)) {
+        filter.brand = data.brand;
+      } else {
+        filter.brand = [data.brand];
+      }
+    }
     if (data?.page) {
       pagination.page = data.page;
     }
