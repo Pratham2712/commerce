@@ -56,14 +56,24 @@ const FilterComponent = () => {
     //   newSearchParams.append(str, data);
     //   setSearchParams(newSearchParams);
     // }
-    if (searchParams.get("color")) {
-      const params = Object.fromEntries(searchParams);
-      params["color"] = searchParams.get("color") + "," + data;
-      setSearchParams(createSearchParams(params));
+    //console.log(searchParams.get(str)?.split(",").includes(data));
+    if (!searchParams.get(str)?.split(",")?.includes(data)) {
+      if (searchParams.get(str)) {
+        const params = Object.fromEntries(searchParams);
+        params[str] = searchParams.get(str) + "," + data;
+        setSearchParams(createSearchParams(params));
+      } else {
+        const params = Object.fromEntries(searchParams);
+        params[str] = data;
+        setSearchParams(createSearchParams(params));
+      }
     } else {
-      const params = Object.fromEntries(searchParams);
-      params["color"] = data;
-      setSearchParams(createSearchParams(params));
+      const updatedValues = searchParams
+        .get(str)
+        .split(",")
+        .filter((value) => value !== data);
+      searchParams.set(str, updatedValues);
+      setSearchParams(createSearchParams(searchParams));
     }
   };
 
@@ -77,26 +87,52 @@ const FilterComponent = () => {
     if (searchParams.get("color")) {
       data.color = searchParams.get("color").split(",");
     }
-    if (searchParams.getAll("brand").length > 0) {
-      if (Array.isArray(searchParams.getAll("brand"))) {
-        data.brand = searchParams.getAll("brand");
-      } else {
-        data.brand = [searchParams.getAll("brand")];
-      }
+    if (searchParams.get("brand")) {
+      data.brand = searchParams.get("brand").split(",");
     }
+    // if (searchParams.getAll("brand").length > 0) {
+    //   if (Array.isArray(searchParams.getAll("brand"))) {
+    //     data.brand = searchParams.getAll("brand");
+    //   } else {
+    //     data.brand = [searchParams.getAll("brand")];
+    //   }
+    // }
     dispatch(getProductThunk(data));
   }, [location.search]);
 
   const removeParam = () => {
     console.log("remove color");
-    const newSearchParams = new URLSearchParams(location.search);
-    newSearchParams.delete("color");
-    setSearchParams(newSearchParams);
+    const params = Object.fromEntries(searchParams);
+    // params["color"] = "";
+    // params["brand"] = "";
+    // params["price"] = "";
+    searchParams.delete("color");
+    searchParams.delete("price");
+    searchParams.delete("brand");
+    // const newSearchParams = new URLSearchParams(location.search);
+    // newSearchParams.delete("color");
+    setSearchParams(createSearchParams(searchParams));
   };
   useEffect(() => {
     setColor(false);
     setPrice(false);
     setBrand(false);
+    const updateBrand = searchParams
+      .get("brand")
+      ?.split(",")
+      ?.filter((value) => value.trim() !== "");
+    const updatePrice = searchParams
+      .get("price")
+      ?.split(",")
+      ?.filter((value) => value.trim() !== "");
+    const updateColor = searchParams
+      .get("color")
+      ?.split(",")
+      ?.filter((value) => value.trim() !== "");
+    searchParams.set("brand", updateBrand);
+    searchParams.set("color", updateColor);
+    searchParams.set("price", updatePrice);
+    setSearchParams(createSearchParams(searchParams));
     removeParam();
   }, [searchParams.get("type"), searchParams.get("subcategory")]);
 
@@ -142,8 +178,8 @@ const FilterComponent = () => {
                   marginBottom: "0.2rem",
                 }}
               >
-                <input type="checkbox" />
-                <Typography>Below Rs.500</Typography>
+                <input type="checkbox" id="price-filter1" />
+                <label for="price-filter1">Below Rs.500</label>
               </div>
               <div
                 style={{
@@ -152,8 +188,8 @@ const FilterComponent = () => {
                   marginBottom: "0.2rem",
                 }}
               >
-                <input type="checkbox" />
-                <Typography>Rs.500-1000</Typography>
+                <input type="checkbox" id="price-filter2" />
+                <label for="price-filter2">Rs.500-1000</label>
               </div>
               <div
                 style={{
@@ -162,8 +198,8 @@ const FilterComponent = () => {
                   marginBottom: "0.2rem",
                 }}
               >
-                <input type="checkbox" />
-                <Typography>Rs.1001-1500</Typography>
+                <input type="checkbox" id="price-filter3" />
+                <label for="price-filter3">Rs.1001-1500</label>
               </div>
             </AccordionDetails>
           </Accordion>
@@ -201,16 +237,22 @@ const FilterComponent = () => {
               <Box sx={{ display: "flex", flexDirection: "column" }}>
                 {allbrand?.map((ele) => {
                   return (
-                    ele?.brand && (
+                    ele && (
                       <div
                         style={{
                           display: "flex",
                           cursor: "pointer",
                         }}
-                        onClick={() => addFilter("brand", ele?.brand)}
+                        onClick={() => addFilter("brand", ele)}
                       >
-                        <input type="checkbox" />
-                        <Typography>{ele?.brand}</Typography>
+                        <input
+                          type="checkbox"
+                          checked={searchParams
+                            .get("brand")
+                            ?.split(",")
+                            ?.includes(ele)}
+                        />
+                        <label style={{ cursor: "pointer" }}>{ele}</label>
                       </div>
                     )
                   );
@@ -265,6 +307,12 @@ const FilterComponent = () => {
                           marginRight: "0.1rem",
                           marginBottom: "0.5rem",
                           cursor: "pointer",
+                          opacity: searchParams
+                            .get("color")
+                            ?.split(",")
+                            ?.includes(ele)
+                            ? 0.5
+                            : 1,
                         }}
                         onClick={() => addFilter("color", ele)}
                       ></div>

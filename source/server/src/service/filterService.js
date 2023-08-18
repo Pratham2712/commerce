@@ -6,6 +6,6 @@ export const getColorService = async (data) => {
 };
 
 export const getBrandService = async (data) => {
-  const res = await productModel.find(data).select("brand");
+  const res = await productModel.find(data).distinct("brand");
   return res;
 };
