@@ -83,7 +83,7 @@ export const getProductController = async (req, res, next) => {
       pagination.pagesize = data.pagesize;
     }
 
-    const result = await getProductService(pagination, filter);
+    const result = await getProductService(pagination, filter, data?.price);
     if (result) {
       return res.status(200).json({
         type: SUCCESS,

@@ -77,6 +77,12 @@ const FilterComponent = () => {
     }
   };
 
+  const addPriceFilter = (data) => {
+    const params = Object.fromEntries(searchParams);
+    params["price"] = data;
+    setSearchParams(createSearchParams(params));
+  };
+
   useEffect(() => {
     const data = {
       page: searchParams.get("page") - 1,
@@ -89,6 +95,9 @@ const FilterComponent = () => {
     }
     if (searchParams.get("brand")) {
       data.brand = searchParams.get("brand").split(",");
+    }
+    if (searchParams.get("price")) {
+      data.price = searchParams.get("price");
     }
     // if (searchParams.getAll("brand").length > 0) {
     //   if (Array.isArray(searchParams.getAll("brand"))) {
@@ -109,6 +118,7 @@ const FilterComponent = () => {
     searchParams.delete("color");
     searchParams.delete("price");
     searchParams.delete("brand");
+    searchParams.delete("price");
     // const newSearchParams = new URLSearchParams(location.search);
     // newSearchParams.delete("color");
     setSearchParams(createSearchParams(searchParams));
@@ -176,30 +186,54 @@ const FilterComponent = () => {
                   display: "flex",
                   alignItems: "center",
                   marginBottom: "0.2rem",
+                  cursor: "pointer",
                 }}
+                onClick={() => addPriceFilter("0-500")}
               >
-                <input type="checkbox" id="price-filter1" />
-                <label for="price-filter1">Below Rs.500</label>
+                <input
+                  type="checkbox"
+                  id="price-filter1"
+                  style={{ cursor: "pointer" }}
+                />
+                <label for="price-filter1" style={{ cursor: "pointer" }}>
+                  Below Rs.500
+                </label>
               </div>
               <div
                 style={{
                   display: "flex",
                   alignItems: "center",
                   marginBottom: "0.2rem",
+                  cursor: "pointer",
                 }}
+                onClick={() => addPriceFilter("500-1000")}
               >
-                <input type="checkbox" id="price-filter2" />
-                <label for="price-filter2">Rs.500-1000</label>
+                <input
+                  type="checkbox"
+                  id="price-filter2"
+                  style={{ cursor: "pointer" }}
+                />
+                <label for="price-filter2" style={{ cursor: "pointer" }}>
+                  Rs.500-1000
+                </label>
               </div>
               <div
                 style={{
                   display: "flex",
                   alignItems: "center",
                   marginBottom: "0.2rem",
+                  cursor: "pointer",
                 }}
+                onClick={() => addPriceFilter("1001-1500")}
               >
-                <input type="checkbox" id="price-filter3" />
-                <label for="price-filter3">Rs.1001-1500</label>
+                <input
+                  type="checkbox"
+                  id="price-filter3"
+                  style={{ cursor: "pointer" }}
+                />
+                <label for="price-filter3" style={{ cursor: "pointer" }}>
+                  Rs.1001-1500
+                </label>
               </div>
             </AccordionDetails>
           </Accordion>

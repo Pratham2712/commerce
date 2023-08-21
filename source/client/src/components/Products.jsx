@@ -51,7 +51,7 @@ const Products = () => {
       sub: searchParams.get("subcategory"),
     };
 
-    dispatch(getProductThunk(data));
+    //dispatch(getProductThunk(data));
   }, [
     searchParams.get("page"),
     searchParams.get("pagesize"),

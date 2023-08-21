@@ -62,8 +62,13 @@ export const getTypeCatService = async (data) => {
   return res;
 };
 
-export const getProductService = async (data, filter) => {
-  console.log(filter);
+export const getProductService = async (data, filter, price) => {
+  if (price) {
+    const [minPrice, maxPrice] = price.split("-").map(Number);
+
+    const priceFilter = { price: { $gte: minPrice, $lte: maxPrice } };
+    filter = { ...filter, ...priceFilter };
+  }
   const total = await productModel.find(filter).count();
   const pagesize = data.pagesize || 10;
   const page = data.page || 0;
