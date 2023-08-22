@@ -47,17 +47,11 @@ const Products = () => {
     const data = {
       page: searchParams.get("page") - 1,
       pagesize: searchParams.get("pagesize"),
-      type: searchParams.get("type"),
-      sub: searchParams.get("subcategory"),
     };
-
-    //dispatch(getProductThunk(data));
-  }, [
-    searchParams.get("page"),
-    searchParams.get("pagesize"),
-    searchParams.get("type"),
-    searchParams.get("subcategory"),
-  ]);
+    if (!searchParams.get("type")) {
+      dispatch(getProductThunk(data));
+    }
+  }, [searchParams.get("page"), searchParams.get("pagesize")]);
   useEffect(() => {
     dispatch(getAllCartThunk());
   }, [updateDone, isLogin]);

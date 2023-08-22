@@ -23,6 +23,13 @@ const FilterComponent = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const dispatch = useDispatch();
   const location = useLocation();
+
+  const priceObj = {
+    "Below Rs.500": "0-500",
+    "Rs.500-1000": "500-1000",
+    "Rs.1001-1500": "1001-1500",
+  };
+
   //useSelector
   const allcolor = useSelector(
     (state) => state.rootReducer.filterSlice.data.color
@@ -78,9 +85,14 @@ const FilterComponent = () => {
   };
 
   const addPriceFilter = (data) => {
-    const params = Object.fromEntries(searchParams);
-    params["price"] = data;
-    setSearchParams(createSearchParams(params));
+    if (searchParams.get("price") == data) {
+      searchParams.delete("price");
+      setSearchParams(createSearchParams(searchParams));
+    } else {
+      const params = Object.fromEntries(searchParams);
+      params["price"] = data;
+      setSearchParams(createSearchParams(params));
+    }
   };
 
   useEffect(() => {
@@ -110,8 +122,7 @@ const FilterComponent = () => {
   }, [location.search]);
 
   const removeParam = () => {
-    console.log("remove color");
-    const params = Object.fromEntries(searchParams);
+    //const params = Object.fromEntries(searchParams);
     // params["color"] = "";
     // params["brand"] = "";
     // params["price"] = "";
@@ -181,60 +192,34 @@ const FilterComponent = () => {
               </Typography>
             </AccordionSummary>
             <AccordionDetails sx={{ marginTop: "-1rem", paddingLeft: "3rem" }}>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  marginBottom: "0.2rem",
-                  cursor: "pointer",
-                }}
-                onClick={() => addPriceFilter("0-500")}
-              >
-                <input
-                  type="checkbox"
-                  id="price-filter1"
-                  style={{ cursor: "pointer" }}
-                />
-                <label for="price-filter1" style={{ cursor: "pointer" }}>
-                  Below Rs.500
-                </label>
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  marginBottom: "0.2rem",
-                  cursor: "pointer",
-                }}
-                onClick={() => addPriceFilter("500-1000")}
-              >
-                <input
-                  type="checkbox"
-                  id="price-filter2"
-                  style={{ cursor: "pointer" }}
-                />
-                <label for="price-filter2" style={{ cursor: "pointer" }}>
-                  Rs.500-1000
-                </label>
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  marginBottom: "0.2rem",
-                  cursor: "pointer",
-                }}
-                onClick={() => addPriceFilter("1001-1500")}
-              >
-                <input
-                  type="checkbox"
-                  id="price-filter3"
-                  style={{ cursor: "pointer" }}
-                />
-                <label for="price-filter3" style={{ cursor: "pointer" }}>
-                  Rs.1001-1500
-                </label>
-              </div>
+              {Object.keys(priceObj).map((elm) => {
+                return (
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      marginBottom: "0.2rem",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      id="price-filter1"
+                      style={{ cursor: "pointer" }}
+                      checked={searchParams.get("price") == priceObj[elm]}
+                    />
+                    <label
+                      for="price-filter1"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => {
+                        addPriceFilter(priceObj[elm]);
+                      }}
+                    >
+                      {elm}
+                    </label>
+                  </div>
+                );
+              })}
             </AccordionDetails>
           </Accordion>
         </Box>
