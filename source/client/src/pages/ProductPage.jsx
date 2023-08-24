@@ -13,7 +13,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { useTheme } from "@mui/material/styles";
 import {
-  Lazy,
   Autoplay,
   Pagination,
   Navigation,
@@ -30,9 +29,11 @@ import "swiper/css/pagination";
 import "swiper/css/free-mode";
 import "swiper/css/navigation";
 import "swiper/css/thumbs";
+import Login from "./Login.jsx";
 
 const ProductPage = () => {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
+  const [loginOpen, setLoginOpen] = useState(false);
   const { id } = useParams();
   const dispatch = useDispatch();
   const theme = useTheme();
@@ -58,6 +59,9 @@ const ProductPage = () => {
   //function
   const addToCart = (e, id) => {
     e.stopPropagation();
+    if (!isLogin) {
+      return setLoginOpen(!loginOpen);
+    }
     const data = {
       product_id: id,
     };
@@ -66,6 +70,7 @@ const ProductPage = () => {
 
   const updateCart = (e, type) => {
     e.stopPropagation();
+
     const info = {
       type: type,
       product_id: id,
@@ -74,6 +79,9 @@ const ProductPage = () => {
   };
 
   const addWishlist = (id) => {
+    if (!isLogin) {
+      return setLoginOpen(!loginOpen);
+    }
     const data = {
       product_id: id,
     };
@@ -339,6 +347,7 @@ const ProductPage = () => {
           <div>{product?.description}</div>
         </Box>
       </Box>
+      <Login loginOpen={loginOpen} setLoginOpen={setLoginOpen}></Login>
     </Box>
   );
 };

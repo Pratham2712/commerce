@@ -16,6 +16,7 @@ import {
   useSearchParams,
 } from "react-router-dom";
 import { getProductThunk } from "../redux/slices/homeSlice";
+import Loading from "./Loading";
 const FilterComponent = () => {
   const [price, setPrice] = useState(false);
   const [brand, setBrand] = useState(false);
@@ -37,6 +38,7 @@ const FilterComponent = () => {
   const allbrand = useSelector(
     (state) => state.rootReducer.filterSlice.data.brand
   );
+  const loading = useSelector((state) => state.rootReducer.homeSlice.loading);
   //function
   const getColor = () => {
     const data = {
@@ -159,6 +161,8 @@ const FilterComponent = () => {
 
   return (
     <Box>
+      {loading && <Loading />}
+
       <Typography variant="h5" sx={{ marginBottom: "1rem" }}>
         Filter
       </Typography>
