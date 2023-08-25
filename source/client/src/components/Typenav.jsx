@@ -66,9 +66,10 @@ const Typenav = () => {
       <CssBaseline />
       <AppBar
         component="nav"
+        position="fixed"
         sx={{
-          position: "fixed",
           top: 64,
+          zIndex: 1,
           //background: "#292929",
           background: "#fff",
           height: "2.5rem",
@@ -113,7 +114,7 @@ const Typenav = () => {
         transition
         disablePortal
         sx={{
-          zIndex: 100,
+          zIndex: 50,
           width: "100%",
           display: "flex",
           justifyContent: "center",

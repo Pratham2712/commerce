@@ -152,3 +152,19 @@ export const getWishlistService = async (data) => {
   const wish = await wishlistModel.findOne({ userId: data?.userId });
   return wish;
 };
+
+export const getResultService = async (data) => {
+  const keyword = data?.word;
+  const query = {
+    $or: [
+      { title: { $regex: new RegExp(".*" + keyword + ".*", "i") } },
+      { subCategory: { $regex: new RegExp(".*" + keyword + ".*", "i") } },
+      { description: { $regex: new RegExp(".*" + keyword + ".*", "i") } },
+    ],
+  };
+  if (keyword == "") {
+    return [];
+  }
+  const results = await productModel.find(query, { title: 1, _id: 1 });
+  return results;
+};

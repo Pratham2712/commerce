@@ -105,6 +105,18 @@ export const getWishlistThunk = createAsyncThunk(
   }
 );
 
+export const getResultThunk = createAsyncThunk(
+  "/home/getResult",
+  async (data) => {
+    try {
+      const res = await axios.post(`${BASE_URL}/home/getResult`, data);
+      return res.data;
+    } catch (error) {
+      return error.response.data;
+    }
+  }
+);
+
 const initialState = {
   loading: false,
   updateDone: false,
@@ -132,6 +144,7 @@ const initialState = {
       totalCart: 0,
     },
     wishlist: {},
+    searchResult: [],
   },
   status: {
     getTypeCatThunk: IDLE,
@@ -142,6 +155,7 @@ const initialState = {
     updateCartThunk: IDLE,
     addWishlistThunk: IDLE,
     getWishlistThunk: IDLE,
+    getResultThunk: IDLE,
   },
 };
 
@@ -367,6 +381,33 @@ const homeSlice = createSlice({
       })
       .addCase(getWishlistThunk.rejected, (state, action) => {
         state.status.getWishlistThunk = ERROR;
+        state.loading = false;
+        state.errorData.message = action.error.message;
+      })
+      //getResultThunk======================================================================================================
+      .addCase(getResultThunk.pending, (state, { payload }) => {
+        state.loading = false;
+      })
+      .addCase(getResultThunk.fulfilled, (state, { payload }) => {
+        switch (payload.type) {
+          case SUCCESS:
+            state.loading = false;
+            state.data.searchResult = payload.data;
+            state.status.getResultThunk = FULFILLED;
+            break;
+          default:
+            state.loading = false;
+            state.data.searchResult = [];
+            state.errorData = {
+              message: payload.message,
+              type: payload.type,
+              errors: payload.errors,
+            };
+            break;
+        }
+      })
+      .addCase(getResultThunk.rejected, (state, action) => {
+        state.status.getResultThunk = ERROR;
         state.loading = false;
         state.errorData.message = action.error.message;
       });

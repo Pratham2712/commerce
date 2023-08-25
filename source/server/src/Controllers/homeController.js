@@ -4,6 +4,7 @@ import {
   getAllCartService,
   getProductDetailService,
   getProductService,
+  getResultService,
   getTypeCatService,
   getWishlistService,
   updateCartService,
@@ -206,6 +207,7 @@ export const addWishlistController = async (req, res, next) => {
     next(error);
   }
 };
+
 export const getWishlistController = async (req, res, next) => {
   try {
     const data = {
@@ -222,6 +224,37 @@ export const getWishlistController = async (req, res, next) => {
       return res.status(400).json({
         type: FAILURE,
         message: "Failed to fetch wishlist",
+        errors: [],
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getResultController = async (req, res, next) => {
+  try {
+    const data = {
+      word: req.body?.word,
+    };
+    if (req.body?.word == "") {
+      return res.status(400).json({
+        type: FAILURE,
+        message: "Failed to fetch search result",
+        errors: [],
+      });
+    }
+    const result = await getResultService(data);
+    if (result) {
+      return res.status(200).json({
+        type: SUCCESS,
+        message: "Fetch search result successfully",
+        data: result,
+      });
+    } else {
+      return res.status(400).json({
+        type: FAILURE,
+        message: "Failed to fetch search result",
         errors: [],
       });
     }

@@ -23,6 +23,7 @@ import {
 } from "../redux/slices/UserInfoSlice";
 import { User_Cart, User_Home } from "../constants/links";
 import { Link, NavLink } from "react-router-dom";
+import { getResultThunk } from "../redux/slices/homeSlice";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -72,7 +73,8 @@ const Navbar = () => {
   const [anchorEl, setAnchorEl] = useState();
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState();
   const [loginOpen, setLoginOpen] = useState(false);
-
+  const [anchorEl2, setAnchorEl2] = useState();
+  const open = Boolean(anchorEl2);
   const dispatch = useDispatch();
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -88,10 +90,17 @@ const Navbar = () => {
     (state) => state.rootReducer.homeSlice.data.cart.totalCart
   );
 
+  const searchResult = useSelector(
+    (state) => state.rootReducer.homeSlice.data.searchResult
+  );
+
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
+  const handleClose = () => {
+    setAnchorEl2(null);
+  };
   const handleMobileMenuClose = () => {
     setMobileMoreAnchorEl(null);
   };
@@ -103,6 +112,13 @@ const Navbar = () => {
 
   const handleMobileMenuOpen = (event) => {
     setMobileMoreAnchorEl(event.currentTarget);
+  };
+  //function
+  const getResult = (data) => {
+    const info = {
+      word: data.value,
+    };
+    dispatch(getResultThunk(info));
   };
 
   const menuId = "primary-search-account-menu";
@@ -242,15 +258,43 @@ const Navbar = () => {
               </Link>
             </Typography>
             <Box sx={{ flexGrow: 0.13 }} />
-            <Search>
+            <Search ref={setAnchorEl2} sx={{ position: "relative" }}>
               <SearchIconWrapper>
                 <SearchIcon />
               </SearchIconWrapper>
               <StyledInputBase
                 placeholder="Search…"
                 inputProps={{ "aria-label": "search" }}
+                onChange={(e) => getResult(e.target)}
               />
             </Search>
+
+            <Box
+              sx={{
+                position: "absolute",
+                background: "white",
+                borderRadius: "6px",
+                top: "85%",
+                color: "black",
+                left: "28%",
+                minWidth: "30rem",
+                width: "30rem",
+                boxShadow:
+                  "rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px",
+                padding: "1rem 1rem",
+              }}
+            >
+              {searchResult && (
+                <Box>
+                  <Box>
+                    {searchResult?.map((ele) => {
+                      return <Typography>{ele?.title}</Typography>;
+                    })}
+                  </Box>
+                </Box>
+              )}
+            </Box>
+
             <Box sx={{ flexGrow: 0.13 }} />
             <Box sx={{ display: { xs: "none", md: "flex" } }}>
               <Button

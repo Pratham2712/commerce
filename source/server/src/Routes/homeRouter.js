@@ -5,6 +5,7 @@ import {
   getAllCartController,
   getProductController,
   getProductDetailController,
+  getResultController,
   getTypeCatController,
   getWishlistController,
   updateCartController,
@@ -21,5 +22,6 @@ homeRouter.post("/updatecart", verifyToken, updateCartController);
 homeRouter.get("/getallcart", verifyToken, getAllCartController);
 homeRouter.get("/getWishlist", verifyToken, getWishlistController);
 homeRouter.post("/addwishlist", verifyToken, addWishlistController);
+homeRouter.post("/getResult", getResultController);
 
 export { homeRouter };
