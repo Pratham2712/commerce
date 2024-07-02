@@ -137,7 +137,7 @@ export const getAllCartController = async (req, res, next) => {
     const result = await getAllCartService(data);
     if (result) {
       let cartDetail = {};
-      result.data.list.forEach((item) => {
+      result.data?.list.forEach((item) => {
         cartDetail[item.product_id] = item.count;
       });
       return res.status(200).json({

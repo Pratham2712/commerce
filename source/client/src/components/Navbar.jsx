@@ -272,26 +272,31 @@ const Navbar = () => {
             <Box
               sx={{
                 position: "absolute",
-                background: "white",
-                borderRadius: "6px",
-                top: "85%",
-                color: "black",
-                left: "28%",
-                minWidth: "30rem",
-                width: "30rem",
-                boxShadow:
-                  "rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px",
-                padding: "1rem 1rem",
-              }}
-            >
+                
+                ///padding: "1rem 1rem",
+                }}
+                >
               {searchResult && (
-                <Box>
-                  <Box>
+                <Box sx={{
+                  position:"relative",
+                  top: "85%",
+                  color: "black",
+                  left: "-37%",
+                  minWidth: "25rem",
+                  width: "25rem",
+                  background: "white",
+                borderRadius: "6px",
+                
+                boxShadow:
+                "rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px",
+
+                }}>
+                  <Box  >
                     {searchResult?.map((ele) => {
-                      return <Typography>{ele?.title}</Typography>;
+                      return <Typography sx={{paddingTop:"0.2rem",paddingLeft:"1rem",paddingBottom:"0.2rem"}}>{ele?.title}</Typography>;
                     })}
                   </Box>
-                </Box>
+                  </Box>
               )}
             </Box>
 

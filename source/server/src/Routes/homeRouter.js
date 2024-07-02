@@ -1,4 +1,6 @@
 import { Router } from "express";
+import express from "express";
+import cookieParser from "cookie-parser";
 import {
   addWishlistController,
   addtocartController,
@@ -11,6 +13,9 @@ import {
   updateCartController,
 } from "../Controllers/homeController.js";
 import { verifyToken } from "../middlewares/jwtMiddlewares.js";
+
+const app = express();
+app.use(cookieParser());
 
 const homeRouter = Router();
 
