@@ -1,4 +1,5 @@
-export const BASE_URL = `http://192.168.1.152:8000`;
+// export const BASE_URL = `http://192.168.1.152:8000`;
+export const BASE_URL = `https://ecommerce-server-p4xo.onrender.com`;
 export const FAILURE = "FAILURE";
 export const OTP_FAILURE = "OTP_FAILURE";
 export const OTP_ACTIVE = "OTP_ACTIVE";
